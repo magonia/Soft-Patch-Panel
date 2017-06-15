@@ -116,7 +116,7 @@ static void UT_ringlatencystats_03(void) {
    int n_timestamp = 0;
    struct rte_mbuf mbufs[n_ring][n_pkt];
    struct rte_mbuf *pkts[n_pkt];
-   struct spp_ring_latency_stats stats[n_ring];
+   struct spp_ringlatencystats_ring_latency_stats stats[n_ring];
 
    /* setup */
    spp_ringlatencystats_init(1000, n_ring);
