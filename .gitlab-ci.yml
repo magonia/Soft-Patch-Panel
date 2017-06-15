@@ -1,9 +1,9 @@
 stages:
-  - test
+	- test
 
 test_job:
-  type: test
-    script:
-        - ./test_script.sh
-  tags:
-      - docker
+	type: test
+	script:
+		- ./test_script.sh
+	tags:
+		- docker
