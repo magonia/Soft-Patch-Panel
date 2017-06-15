@@ -5,5 +5,5 @@ test_job:
   type: test
     script:
         - ./test_script.sh
-	  tags:
-	      - docker
+  tags:
+      - docker
