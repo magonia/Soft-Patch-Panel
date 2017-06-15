@@ -6,4 +6,4 @@ test_job:
     script:
         - ./test_script.sh
     tags:
-        - docker
+        - shell
