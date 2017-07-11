@@ -1,5 +1,5 @@
 #!/bin/bash
-cmd="env | grep -i rte"
+cmd="$RTE_SDK"
 echo "> $cmd"
 $cmd
 
