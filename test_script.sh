@@ -1,4 +1,8 @@
 #!/bin/bash
+cmd="source ~/.bashrc"
+echo "> $cmd"
+$cmd
+
 cmd="$RTE_SDK"
 echo "> $cmd"
 $cmd
