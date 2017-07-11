@@ -1,5 +1,13 @@
 #!/bin/bash
-cmd="source ~/.bashrc"
+cmd="export RTE_SDK=/home/gitlab-runner/dpdk-17.05"
+echo "> $cmd"
+$cmd
+
+cmd="export RTE_TARGET=x86_64-native-linuxapp-gcc"
+echo "> $cmd"
+$cmd
+
+cmd="source /home/gitlab-runner/.bashrc"
 echo "> $cmd"
 $cmd
 
