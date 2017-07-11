@@ -1,4 +1,8 @@
 #!/bin/bash
+cmd="echo \$RTE_SDK"
+echo "> $cmd"
+$cmd
+
 cmd="pwd"
 echo "> $cmd"
 $cmd
