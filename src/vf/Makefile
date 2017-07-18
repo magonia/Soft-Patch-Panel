@@ -29,17 +29,28 @@
 #   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-VERSION = 17.05
-
 ifeq ($(RTE_SDK),)
 $(error "Please define RTE_SDK environment variable")
 endif
 
 # Default target, can be overriden by command line or environment
-RTE_TARGET ?= x86_64-native-linuxapp-gcc
-
 include $(RTE_SDK)/mk/rte.vars.mk
 
-DIRS-y += src
+# binary name
+APP = spp_vf
 
-include $(RTE_SDK)/mk/rte.extsubdir.mk
+# all source are stored in SRCS-y
+SRCS-y := spp_vf.c spp_config.c classifier_mac.c spp_forward.c ringlatencystats.c ../shared/common.c
+
+CFLAGS += $(WERROR_FLAGS) -O3
+CFLAGS += -I$(SRCDIR)/../shared
+#CFLAGS += -DSPP_DEMONIZE
+#CFLAGS += -DSPP_RINGLATENCYSTATS_ENABLE
+
+LDLIBS += -ljansson
+ifeq ($(CONFIG_RTE_BUILD_SHARED_LIB),y)
+LDLIBS += -lrte_pmd_ring
+LDLIBS += -lrte_pmd_vhost
+endif
+
+include $(RTE_SDK)/mk/rte.extapp.mk

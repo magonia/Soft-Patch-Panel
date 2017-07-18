@@ -41,5 +41,6 @@ include $(RTE_SDK)/mk/rte.vars.mk
 DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += nfv
 DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += primary
 DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += vm
+DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += vf
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk
