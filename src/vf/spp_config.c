@@ -630,18 +630,18 @@ config_load_proc_info(const json_t *obj, int node_id, struct spp_config_area *co
  * NG : -1
  */
 int
-spp_config_load_file(int node_id, struct spp_config_area *config)
+spp_config_load_file(const char* config_file_path, int node_id, struct spp_config_area *config)
 {
 	/* Config initialize */
 	config_init_data(config);
 	
 	/* Config load */
 	json_error_t json_error;
-	json_t *conf_obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+	json_t *conf_obj = json_load_file(config_file_path, 0, &json_error);
 	if (unlikely(conf_obj == NULL)) {
 		/* Load error */
 		RTE_LOG(ERR, APP, "Config load failed. (path = %s, text = %s)\n",
-				 SPP_CONFIG_FILE_PATH, json_error.text);
+				 config_file_path, json_error.text);
 		return -1;
 	}
 

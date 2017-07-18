@@ -45,7 +45,7 @@ SRCS-y := spp_vf.c spp_config.c classifier_mac.c spp_forward.c ringlatencystats.
 CFLAGS += $(WERROR_FLAGS) -O3
 CFLAGS += -I$(SRCDIR)/../shared
 #CFLAGS += -DSPP_DEMONIZE
-CFLAGS += -DSPP_RINGLATENCYSTATS_ENABLE
+#CFLAGS += -DSPP_RINGLATENCYSTATS_ENABLE
 
 LDLIBS += -ljansson
 ifeq ($(CONFIG_RTE_BUILD_SHARED_LIB),y)

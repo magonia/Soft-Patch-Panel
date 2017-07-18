@@ -14,6 +14,15 @@
 #define SPP_CORE_STATUS_CHECK_MAX 5
 #define SPP_RING_LATENCY_STATS_SAMPLING_INTERVAL 1000000
 
+/* getopt_long return value for long option */
+enum SPP_LONGOPT_RETVAL {
+	SPP_LONGOPT_RETVAL__ = 127,
+
+	/* add below */
+
+	SPP_LONGOPT_RETVAL_CONFIG,
+};
+
 /* struct */
 struct startup_param {
 	uint64_t cpu;
@@ -41,13 +50,18 @@ static struct startup_param	g_startup_param;
 static struct if_info		g_if_info;
 static struct spp_core_info	g_core_info[SPP_CONFIG_CORE_MAX];
 
+static char config_file_path[PATH_MAX];
+
 /*
  * print a usage message
  */
 static void
 usage(const char *progname)
 {
-	RTE_LOG(INFO, APP, "Usage: %s [EAL args]\n\n", progname);
+	RTE_LOG(INFO, APP, "Usage: %s [EAL args] -- [--config CONFIG_FILE_PATH]\n"
+			" --config CONFIG_FILE_PATH: specific config file path\n"
+			"\n"
+			, progname);
 }
 
 /*
@@ -239,10 +253,10 @@ parse_cpu_bit(uint64_t *cpu, const char *cpu_bit)
 }
 
 /*
- * Parse the application arguments to the client app.
+ * Parse the dpdk arguments for use in client app.
  */
 static int
-parse_app_args(int argc, char *argv[])
+parse_dpdk_args(int argc, char *argv[])
 {
 	int cnt;
 	int option_index, opt;
@@ -272,6 +286,48 @@ parse_app_args(int argc, char *argv[])
 		default:
 			/* CPU */
 			/* DPDKのパラメータは他にもあるので、エラーとはしない */
+			break;
+		}
+	}
+
+	return 0;
+}
+
+/*
+ * Parse the application arguments to the client app.
+ */
+static int
+parse_app_args(int argc, char *argv[])
+{
+	int cnt;
+	int option_index, opt;
+	const int argcopt = argc;
+	char *argvopt[argcopt];
+	const char *progname = argv[0];
+	static struct option lgopts[] = { 
+			{ "config", required_argument, NULL, SPP_LONGOPT_RETVAL_CONFIG },
+			{ 0 },
+	 };
+
+	/* getoptを使用するとargvが並び変わるみたいなので、コピーを実施 */
+	for (cnt = 0; cnt < argcopt; cnt++) {
+		argvopt[cnt] = argv[cnt];
+	}
+
+	/* Check application parameter */
+	optind = 0;
+	opterr = 0;
+	while ((opt = getopt_long(argc, argvopt, "", lgopts,
+			&option_index)) != EOF) {
+		switch (opt) {
+		case SPP_LONGOPT_RETVAL_CONFIG:
+			if (optarg[0] == '\0' || strlen(optarg) >= sizeof(config_file_path)) {
+				usage(progname);
+				return -1;
+			}
+			strcpy(config_file_path, optarg);
+			break;
+		default:
 			break;
 		}
 	}
@@ -412,12 +468,14 @@ set_form_proc_info(struct spp_config_area *config)
 		}
 	}
 
+#if 0 /* bugfix#385 */
 	if (unlikely((cpu_bit & g_startup_param.cpu) != cpu_bit)) {
 		/* CPU mismatch */
 		RTE_LOG(ERR, APP, "CPU mismatch (cpu param = %lx, config = %lx)\n",
 				g_startup_param.cpu, cpu_bit);
 		return -1;
 	}
+#endif
 	return 0;
 }
 
@@ -717,17 +775,14 @@ ut_main(int argc, char *argv[])
 	signal(SIGTERM, stop_process);
 	signal(SIGINT,  stop_process);
 
+	/* set default config file path */
+	strcpy(config_file_path, SPP_CONFIG_FILE_PATH);
+
 	unsigned int main_lcore_id = 0xffffffff;
 	while(1) {
-		/* Parse parameters */
-		int ret_parse = parse_app_args(argc, argv);
+		/* Parse dpdk parameters */
+		int ret_parse = parse_dpdk_args(argc, argv);
 		if (unlikely(ret_parse != 0)) {
-			break;
-		}
-
-		/* Load config */
-		int ret_config = spp_config_load_file(0, &g_config);
-		if (unlikely(ret_config != 0)) {
 			break;
 		}
 
@@ -737,14 +792,27 @@ ut_main(int argc, char *argv[])
 			break;
 		}
 
-		/* set log level  */
-//		rte_set_log_level(RTE_LOG_LEVEL);
+		/* Skip dpdk parameters */
+		argc -= ret_dpdk;
+		argv += ret_dpdk;
+
+		/* Set log level  */
 		rte_log_set_global_level(RTE_LOG_LEVEL);
-/*		ret_dpdk = rte_log_set_level(RTE_LOGTYPE_USER1, RTE_LOG_LEVEL);
-		if (unlikely(ret_dpdk < 0)) {
+
+		/* Parse application parameters */
+		ret_parse = parse_app_args(argc, argv);
+		if (unlikely(ret_parse != 0)) {
 			break;
 		}
-*/
+
+		RTE_LOG(INFO, APP, "Load config file(%s)\n", config_file_path);
+
+		/* Load config */
+		int ret_config = spp_config_load_file(config_file_path, 0, &g_config);
+		if (unlikely(ret_config != 0)) {
+			break;
+		}
+
 		/* Get core id. */
 		main_lcore_id = rte_lcore_id();
 

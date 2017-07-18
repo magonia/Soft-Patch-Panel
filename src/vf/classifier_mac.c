@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <math.h>
 
+#include <rte_common.h>
 #include <rte_mbuf.h>
 #include <rte_log.h>
 #include <rte_cycles.h>
@@ -38,6 +39,17 @@
 		nano second */
 #define DRAIN_TX_PACKET_INTERVAL 100
 
+/* hash table name buffer size
+	[reson for value]
+		in dpdk's lib/librte_hash/rte_cuckoo_hash.c
+			snprintf(ring_name, sizeof(ring_name), "HT_%s", params->name);
+			snprintf(hash_name, sizeof(hash_name), "HT_%s", params->name);
+		ring_name buffer size is RTE_RING_NAMESIZE
+		hash_name buffer size is RTE_HASH_NAMESIZE */
+static const size_t HASH_TABLE_NAME_BUF_SZ =
+		((RTE_HASH_NAMESIZE < RTE_RING_NAMESIZE) ? 
+		RTE_HASH_NAMESIZE: RTE_RING_NAMESIZE) - 3;
+
 /* mac address string(xx:xx:xx:xx:xx:xx) buffer size */
 static const size_t ETHER_ADDR_STR_BUF_SZ =
 		ETHER_ADDR_LEN * 2 + (ETHER_ADDR_LEN - 1) + 1;
@@ -51,6 +63,12 @@ struct classified_data {
 	struct rte_mbuf *pkts[MAX_PKT_BURST];
 };
 
+/* hash table count. use to make hash table name.
+	[reason for value]
+		it is incremented at the time of use, 
+		but since we want to start at 0. */
+static rte_atomic16_t g_hash_table_count = RTE_ATOMIC16_INIT(0xff);
+
 /* initialize classifier. */
 static int
 init_classifier(const struct spp_core_info *core_info,
@@ -59,11 +77,19 @@ init_classifier(const struct spp_core_info *core_info,
 	int ret = -1;
 	int i;
 	struct ether_addr eth_addr;
+	char hash_table_name[HASH_TABLE_NAME_BUF_SZ];
 	char mac_addr_str[ETHER_ADDR_STR_BUF_SZ];
+
+	/* make hash table name(require uniqueness between processes) */
+	sprintf(hash_table_name, "cmtab_%08x%02hx",
+			getpid(), rte_atomic16_add_return(&g_hash_table_count, 1));
+
+	RTE_LOG(INFO, SPP_CLASSIFIER_MAC, "Create table. name=%s, bufsz=%lu\n",
+			hash_table_name, HASH_TABLE_NAME_BUF_SZ);
 
 	/* set hash creating parameters */
 	struct rte_hash_parameters hash_params = {
-			.name      = "classifier_mac_table",
+			.name      = hash_table_name,
 			.entries   = NUM_CLASSIFIER_MAC_TABLE_ENTRY,
 			.key_len   = sizeof(struct ether_addr),
 			.hash_func = DEFAULT_HASH_FUNC,
