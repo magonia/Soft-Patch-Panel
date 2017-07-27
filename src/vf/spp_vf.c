@@ -524,7 +524,7 @@ set_form_proc_info(struct spp_config_area *config)
 			}
 
 			/* IF情報からCORE情報を変更する場合用に設定 */
-			patch_info->rx_core_no = core_cnt;
+			patch_info->rx_core_no = core_func->core_no;
 			patch_info->rx_core    = &core_info->rx_ports[rx_start + rx_cnt];
 		}
 
@@ -549,7 +549,7 @@ set_form_proc_info(struct spp_config_area *config)
 			}
 
 			/* IF情報からCORE情報を変更する場合用に設定 */
-			patch_info->tx_core_no = core_cnt;
+			patch_info->tx_core_no = core_func->core_no;
 			patch_info->tx_core    = &core_info->tx_ports[tx_start + tx_cnt];
 		}
 	}
@@ -1039,7 +1039,7 @@ int
 spp_update_classifier_table(
 		enum spp_classifier_type type,
 		const char *data,
-		struct spp_config_port_info *port)
+		const struct spp_config_port_info *port)
 {
 	enum port_type if_type = UNDEF;
         int if_no = 0;
@@ -1103,7 +1103,7 @@ spp_update_classifier_table(
 				return SPP_RET_NG;
 			}
 
-			if (unlikely(patch_info->use_flg != 0)) {
+			if (unlikely(patch_info->use_flg == 0)) {
 				RTE_LOG(ERR, APP, "Port not added. ( port = %d:%d )\n", port->if_type, port->if_no);
 				return SPP_RET_NOT_ADD_PORT;
 			}
