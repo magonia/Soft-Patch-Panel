@@ -42,6 +42,7 @@ msgbuf_allocate(size_t capacity)
 	if (unlikely(buf == NULL))
 		return NULL;
 
+	memset(buf, 0x00, capacity + sizeof(size_t));
 	*((size_t *)buf) = capacity;
 
 	return buf + sizeof(size_t);
@@ -470,7 +471,7 @@ decode_json_object(void *output, const json_t *parent_obj,
 	void *sub_output;
 
 	for (i = 0; unlikely(! IS_END_OF_DECODE_RULE(&rules[i])); ++ i) {
-		rule = rules + 1;
+		rule = rules + i;
 
 		RTE_LOG(DEBUG, SPP_COMMAND_PROC, "get one object. name=%s\n",
 				rule->name);
@@ -496,20 +497,20 @@ decode_json_object(void *output, const json_t *parent_obj,
 
 			json_array_foreach(value_obj, n, obj) {
 				RTE_LOG(DEBUG, SPP_COMMAND_PROC, "Decode array element. "
-						"index=%d\n", i);
+						"index=%d\n", n);
 				
 				if (unlikely(json_typeof(obj) != rule->array.json_type)) {
 					RTE_LOG(ERR, SPP_COMMAND_PROC, "Bad value type. "
-							"name=%s, index=%d\n", rule->name, i);
+							"name=%s, index=%d\n", rule->name, n);
 					return DERR_BAD_TYPE;
 				}
 
 				sub_output = DR_GET_OUTPUT(output, rule) + 
-						(rule->array.element_sz * i);
+						(rule->array.element_sz * n);
 				ret = (*rule->decode_proc)(sub_output, obj, rule);
 				if (unlikely(ret != 0)) {
 					RTE_LOG(ERR, SPP_COMMAND_PROC, "Bad value. "
-							"name=%s, index=%d\n", rule->name, i);
+							"name=%s, index=%d\n", rule->name, n);
 					return ret;
 				}
 			}
@@ -749,6 +750,7 @@ void
 spp_command_proc_do(void)
 {
 	int ret = -1;
+	int msg_ret = -1;
 	int i;
 
 	static int sock = -1;
@@ -765,12 +767,12 @@ spp_command_proc_do(void)
 	if (unlikely(ret != 0))
 		return;
 
-	ret = receive_message(&sock, &msgbuf);
-	if (likely(ret == 0)) {
+	msg_ret = receive_message(&sock, &msgbuf);
+	if (likely(msg_ret <= 0)) {
 		return;
 	}
 
-	for (i = 0; i < ret; ++i) {
+	for (i = 0; i < msg_ret; ++i) {
 		switch (*(msgbuf + msg_len + i)) {
 		case '{':
 			++lb_cnt;
@@ -785,9 +787,12 @@ spp_command_proc_do(void)
 			ret = process_request(msgbuf, msg_len);
 
 			msgbuf_remove_front(msgbuf, msg_len);
+			msg_ret = 0;
 			msg_len = 0;
 			rb_cnt = 0;
 			lb_cnt = 0;
 		}
 	}
+
+	msg_len = msg_len + msg_ret;
 }
