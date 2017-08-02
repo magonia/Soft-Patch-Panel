@@ -1,5 +1,6 @@
 {
-  "vfs": {
+  "vfs": [
+    {
       "name": "vf0",
       "num_vhost": 3,
       "num_ring": 6,
@@ -27,7 +28,7 @@
           "core": 4,
           "type": "classifier_mac",
           "rx_port": "nic0",
-          "tx_port_table": "classifier_mac_table"
+          "tx_port": "ring0"
         },
         {
           "core": 5,
@@ -54,7 +55,8 @@
           "tx_port": "nic0"
         }
       ]
-    },
+    }
+  ],
   "classifier_table": {
     "name":"classifier_mac_table",
     "table": [
