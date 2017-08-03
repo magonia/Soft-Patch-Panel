@@ -38,7 +38,7 @@ execute_command(const struct spp_command *command)
 
 	switch (command->type) {
 	case SPP_CMDTYPE_CLASSIFIER_TABLE:
-		RTE_LOG(DEBUG, SPP_COMMAND_PROC, "Execute classifier_table command.");
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute classifier_table command.\n");
 		ret = spp_update_classifier_table(
 				command->spec.classifier_table.type,
 				command->spec.classifier_table.value,
@@ -46,12 +46,12 @@ execute_command(const struct spp_command *command)
 		break;
 
 	case SPP_CMDTYPE_FLUSH:
-		RTE_LOG(DEBUG, SPP_COMMAND_PROC, "Execute flush command.");
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute flush command.\n");
 		ret = spp_flush();
 		break;
 
 	case SPP_CMDTYPE_PROCESS:
-		RTE_LOG(DEBUG, SPP_COMMAND_PROC, "Process command is requested.");
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute process command.\n");
 		/* nothing to do here */
 		break;
 
@@ -244,6 +244,10 @@ send_decode_error_response(int *sock, const struct spp_command_request *request,
 		return;
 	}
 
+	/* **
+	 * output order of object in string is inverse to addition order
+	 * **/
+
 	/* create & append result array */
 	ret = append_response_decode_results_object(top_obj, request, decode_error);
 	if (unlikely(ret != 0)) {
@@ -255,6 +259,9 @@ send_decode_error_response(int *sock, const struct spp_command_request *request,
 	/* serialize */
 	msg = json_dumps(top_obj, JSON_INDENT(2));
 	json_decref(top_obj);
+
+	RTE_LOG(INFO, SPP_COMMAND_PROC, "Make command response (decode error). "
+			"response_str=\n%s\n", msg);
 
 	/* send response to requester */
 	ret = spp_send_message(sock, msg, strlen(msg));
@@ -281,13 +288,9 @@ send_command_result_response(int *sock, const struct spp_command_request *reques
 		return;
 	}
 
-	/* create & append result array */
-	ret = append_response_command_results_object(top_obj, request, command_results);
-	if (unlikely(ret != 0)) {
-		RTE_LOG(ERR, SPP_COMMAND_PROC, "Failed to make command result response.");
-		json_decref(top_obj);
-		return;
-	}
+	/* **
+	 * output order of object in string is inverse to addition order
+	 * **/
 
 	/* append process information value */
 	if (request->is_requested_process) {
@@ -299,14 +302,25 @@ send_command_result_response(int *sock, const struct spp_command_request *reques
 		}
 	}
 
+	/* create & append result array */
+	ret = append_response_command_results_object(top_obj, request, command_results);
+	if (unlikely(ret != 0)) {
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Failed to make command result response.");
+		json_decref(top_obj);
+		return;
+	}
+
 	/* serialize */
 	msg = json_dumps(top_obj, JSON_INDENT(2));
 	json_decref(top_obj);
 
+	RTE_LOG(INFO, SPP_COMMAND_PROC, "Make command response (command result). "
+			"response_str=\n%s\n", msg);
+
 	/* send response to requester */
 	ret = spp_send_message(sock, msg, strlen(msg));
 	if (unlikely(ret != 0)) {
-		RTE_LOG(ERR, SPP_COMMAND_PROC, "Failed to send decode error response.");
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Failed to send command result response.");
 		/* not return */
 	}
 
@@ -329,7 +343,7 @@ process_request(int *sock, const char *request_str, size_t request_str_len)
 	memset(command_results, 0, sizeof(command_results));
 
 	RTE_LOG(INFO, SPP_COMMAND_PROC, "Start command request processing. "
-			"request_str=%.*s\n", (int)request_str_len, request_str);
+			"request_str=\n%.*s\n", (int)request_str_len, request_str);
 
 	/* decode request message */
 	ret = spp_command_decode_request(
