@@ -1,6 +1,7 @@
 #ifndef __SPP_CONFIG_H__
 #define __SPP_CONFIG_H__
 
+#include <jansson.h>
 #include "common.h"
 
 #define SPP_CONFIG_FILE_PATH "/usr/local/etc/spp/spp.json"
@@ -12,6 +13,7 @@
 #define SPP_CONFIG_STR_LEN 32
 #define SPP_CONFIG_MAC_TABLE_MAX 16
 #define SPP_CONFIG_CORE_MAX 64
+#define SPP_CONFIG_PATH_LEN 1024
 
 /*
  * Process type for each CORE
@@ -79,6 +81,28 @@ struct spp_config_area {
 	struct spp_config_proc_info proc;
 	struct spp_config_classifier_table classifier_table;
 };
+
+/*
+ * Instead of json_path_get
+ * OK : Json object address
+ * NG : NULL
+ */
+json_t *spp_config_get_path_obj(const json_t *json, const char *path);
+
+/*
+ * Change mac address string to int64
+ * OK : int64 that store mac address
+ * NG : -1
+ */
+int64_t spp_config_change_mac_str_to_int64(const char *mac);
+
+/*
+ * Extract if-type/if-number from port string
+ *
+ * OK : 0
+ * NG : -1
+ */
+int spp_config_get_if_info(const char *port, enum port_type *if_type, int *if_no);
 
 /*
  * Load config file
