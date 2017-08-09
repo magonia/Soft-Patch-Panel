@@ -22,9 +22,9 @@ int spp_ringlatencystats_init(uint64_t samp_intvl, uint16_t stats_count)
 {
 	return stub_ret_spp_ringlatencystats_init;
 }
-int spp_ringlatencystats_uninit()
+void spp_ringlatencystats_uninit()
 {
-	return 0;
+	return;
 }
 void spp_ringlatencystats_get_stats(int ring_id,
                 struct spp_ringlatencystats_ring_latency_stats *stats)
@@ -32,6 +32,27 @@ void spp_ringlatencystats_get_stats(int ring_id,
 	return;
 }
 
+int spp_forward(void *arg)
+{
+	return 0;
+}
+
+int stub_ret_spp_classifier_mac_update = 0;
+int spp_classifier_mac_update(struct spp_core_info *core_info)
+{
+	printf("spp_classifier_mac_update\n");
+	return stub_ret_spp_classifier_mac_update;
+}
+
+int spp_command_proc_init(const char* controller_ip, int controller_port)
+{
+	return 0;
+}
+
+void spp_command_proc_do(void)
+{
+	return;
+}
 // =============================================================================
 // DPDK関連 stub関数
 // =============================================================================
@@ -128,4 +149,9 @@ static struct rte_config stub_rte_config;
 struct rte_config *rte_eal_get_configuration(void)
 {
         return &stub_rte_config;
+}
+
+void rte_log_set_global_level(uint32_t level)
+{
+	return;
 }
