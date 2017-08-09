@@ -644,7 +644,7 @@ static void UT_config_set_rx_port_01(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -675,7 +675,7 @@ static void UT_config_set_rx_port_02(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_CLASSIFIER_MAC, functions_obj, &functions);
@@ -702,7 +702,7 @@ static void UT_config_set_rx_port_03(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[5]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[5]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_FORWARD, functions_obj, &functions);
@@ -729,7 +729,7 @@ static void UT_config_set_rx_port_04(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -753,7 +753,7 @@ static void UT_config_set_rx_port_05(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -777,7 +777,7 @@ static void UT_config_set_rx_port_06(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -801,7 +801,7 @@ static void UT_config_set_rx_port_07(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -825,7 +825,7 @@ static void UT_config_set_rx_port_08(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -849,7 +849,7 @@ static void UT_config_set_rx_port_09(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_MERGE, functions_obj, &functions);
@@ -873,7 +873,7 @@ static void UT_config_set_rx_port_10(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_CLASSIFIER_MAC, functions_obj, &functions);
@@ -897,7 +897,7 @@ static void UT_config_set_rx_port_11(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[0]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[0]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_rx_port(SPP_CONFIG_FORWARD, functions_obj, &functions);
@@ -926,7 +926,7 @@ static void UT_config_set_tx_port_01(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_tx_port(SPP_CONFIG_MERGE, functions_obj, &functions, &classifier_table);
@@ -955,7 +955,7 @@ static void UT_config_set_tx_port_02(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[2]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[2]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_tx_port(SPP_CONFIG_FORWARD, functions_obj, &functions, &classifier_table);
@@ -984,7 +984,7 @@ static void UT_config_set_tx_port_03(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1021,7 +1021,7 @@ static void UT_config_set_tx_port_04(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[7]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_tx_port(SPP_CONFIG_MERGE, functions_obj, &functions, &classifier_table);
@@ -1047,7 +1047,7 @@ static void UT_config_set_tx_port_05(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[6]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[6]");
     if (functions_obj != NULL) {
       /* 試験関数起動 */
       ret = config_set_tx_port(SPP_CONFIG_FORWARD, functions_obj, &functions, &classifier_table);
@@ -1073,7 +1073,7 @@ static void UT_config_set_tx_port_06(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1108,7 +1108,7 @@ static void UT_config_set_tx_port_07(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1143,7 +1143,7 @@ static void UT_config_set_tx_port_08(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1171,7 +1171,7 @@ static void UT_config_set_tx_port_09(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1199,7 +1199,7 @@ static void UT_config_set_tx_port_10(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1227,7 +1227,7 @@ static void UT_config_set_tx_port_11(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1255,7 +1255,7 @@ static void UT_config_set_tx_port_12(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1283,7 +1283,7 @@ static void UT_config_set_tx_port_13(void) {
   json_error_t json_error;
   json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
   if (obj != NULL) {
-    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
+    json_t *functions_obj = spp_config_get_path_obj(obj, "$.vfs[0].functions[3]");
     if (functions_obj != NULL) {
       config_load_classifier_table(obj, &config.classifier_table);
 
@@ -1746,6 +1746,190 @@ static void UT_spp_config_load_file_04(void) {
 }
 
 // =============================================================================
+// テストケース12 spp_config_get_path_obj
+// =============================================================================
+// TEST01：正常終了(配列あり)
+static void UT_spp_config_get_path_obj_01(void) {
+  json_t *ret_obj = NULL;
+  int ret = 0;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.vfs[0].num_vhost");
+    if (ret_obj != NULL) {
+      ret = json_integer_value(ret_obj);
+    }
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NOT_NULL(ret_obj);
+  CU_ASSERT_EQUAL(ret, 3);
+}
+
+// TEST02：正常終了(配列なし)
+static void UT_spp_config_get_path_obj_02(void) {
+  json_t *ret_obj = NULL;
+  const char *ret_str = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.classifier_table.name");
+    if (ret_obj != NULL) {
+      ret_str = json_string_value(ret_obj);
+    }
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NOT_NULL(ret_obj);
+  CU_ASSERT_STRING_EQUAL(ret_str, "classifier_mac_table");
+}
+
+// TEST03：先頭が$以外
+static void UT_spp_config_get_path_obj_03(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "classifier_table.name");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST04：先頭が$.以外
+static void UT_spp_config_get_path_obj_04(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$classifier_table.name");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST05：パスの文字数上限越え
+static void UT_spp_config_get_path_obj_05(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.classifier_table.name.01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST06：存在しないパラメータを指定
+static void UT_spp_config_get_path_obj_06(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.name");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST07：配列の要素番号なし
+static void UT_spp_config_get_path_obj_07(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.vfs[].core");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST08：配列の閉じ括弧なし
+static void UT_spp_config_get_path_obj_08(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.vfs[8.core");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// TEST09：配列の要素番号上限越え
+static void UT_spp_config_get_path_obj_09(void) {
+  json_t *ret_obj = NULL;
+
+  /* 試験用コンフィグ指定 */
+  strcpy(stub_config_file_name, "spp_config/vf.json");
+
+  /* Config load */
+  json_error_t json_error;
+  json_t *obj = json_load_file(SPP_CONFIG_FILE_PATH, 0, &json_error);
+  if (obj != NULL) {
+    /* 試験関数起動 */
+    ret_obj = spp_config_get_path_obj(obj, "$.vfs[8].core");
+  }
+
+  /* 確認ポイントチェック */
+  CU_ASSERT_PTR_NULL(ret_obj);
+}
+
+// =============================================================================
 // Main処理　※．テストケースの呼び出しはここに追加して下さい
 // =============================================================================
 int main(int argc, char **argv) {
@@ -1852,6 +2036,17 @@ int main(int argc, char **argv) {
   CU_ADD_TEST(suite, UT_spp_config_load_file_02);
   CU_ADD_TEST(suite, UT_spp_config_load_file_03);
   CU_ADD_TEST(suite, UT_spp_config_load_file_04);
+
+  // Config機能 spp_config_get_path_obj
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_01);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_02);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_03);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_04);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_05);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_06);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_07);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_08);
+  CU_ADD_TEST(suite, UT_spp_config_get_path_obj_09);
 
   /**    ここにテストコードの呼び出しを追加してください      **/
   // "CU_BRM_VERBOSE:Test: test_xxxx ... passd"をコンソールに表示
