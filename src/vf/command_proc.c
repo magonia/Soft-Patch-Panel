@@ -16,7 +16,7 @@
 #define RTE_LOGTYPE_SPP_COMMAND_PROC RTE_LOGTYPE_USER1
 
 /* request message initial size */
-#define MESSAGE_BUFFER_BLOCK_SIZE 2048
+#define CMD_REQ_BUF_INIT_SIZE 2048
 
 /* command execution result code */
 enum command_result_code {
@@ -112,7 +112,7 @@ create_error_result_object(const char* err_msg)
 			"message", err_msg);
 }
 
-/*  */
+/* append decode result array object to specified object */
 static int
 append_response_decode_results_object(json_t *parent_obj,
 		const struct spp_command_request *request,
@@ -167,7 +167,7 @@ append_response_decode_results_object(json_t *parent_obj,
 	return 0;
 }
 
-/*  */
+/* append command execution result array object to specified object */
 static int
 append_response_command_results_object(json_t *parent_obj,
 		const struct spp_command_request *request,
@@ -390,7 +390,7 @@ spp_command_proc_init(const char *controller_ip, int controller_port)
 }
 
 /* process command from controller. */
-void
+int
 spp_command_proc_do(void)
 {
 	int ret = -1;
@@ -404,16 +404,27 @@ spp_command_proc_do(void)
 	static size_t rb_cnt = 0;
 	static size_t lb_cnt = 0;
 
-	if (unlikely(msgbuf == NULL))
-		msgbuf = spp_strbuf_allocate(MESSAGE_BUFFER_BLOCK_SIZE);
+	if (unlikely(msgbuf == NULL)) {
+		msgbuf = spp_strbuf_allocate(CMD_REQ_BUF_INIT_SIZE);
+		if (unlikely(msgbuf == NULL)) {
+			RTE_LOG(ERR, SPP_COMMAND_PROC,
+					"Cannot allocate memory for receive data(init).\n");
+			return -1;
+		}
+	}
 
 	ret = spp_connect_to_controller(&sock);
 	if (unlikely(ret != 0))
-		return;
+		return 0;
 
 	msg_ret = spp_receive_message(&sock, &msgbuf);
-	if (likely(msg_ret <= 0)) {
-		return;
+	if (unlikely(msg_ret <= 0)) {
+		if (likely(msg_ret == 0))
+			return 0;
+		else if (unlikely(msg_ret == SPP_CONNERR_TEMPORARY))
+			return 0;
+		else
+			return -1;
 	}
 
 	for (i = 0; i < msg_ret; ++i) {
@@ -439,4 +450,6 @@ spp_command_proc_do(void)
 	}
 
 	msg_len = msg_len + msg_ret;
+
+	return 0;
 }
