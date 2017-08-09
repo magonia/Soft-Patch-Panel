@@ -13,7 +13,7 @@
         },
         {
           "core": 2,
-          "type": "fwd",
+          "type": "forward",
           "rx_port": "ring1",
           "tx_port": "vhost1"
         },
@@ -28,7 +28,7 @@
           "core": 4,
           "type": "classifier_mac",
           "rx_port": "nic0",
-          "tx_port_table": "classifier_mac_table"
+          "tx_port": [0,1]
         },
         {
           "core": 5,

@@ -317,6 +317,9 @@ parse_app_process_id(const char *process_id_str, int *process_id)
 	if (unlikely(process_id_str == endptr) || unlikely(*endptr != '\0'))
 		return -1;
 
+	if (id >= SPP_PROCESS_MAX)
+		return -1;
+
 	*process_id = id;
 	RTE_LOG(DEBUG, APP, "Set process id = %d\n", *process_id);
 	return 0;
@@ -329,16 +332,20 @@ static int
 parse_app_server(const char *server_str, char *server_ip, int *server_port)
 {
 	const char delim[2] = ":";
-	int pos = 0;
+	unsigned int pos = 0;
 	int port = 0;
 	char *endptr = NULL;
 
 	pos = strcspn(server_str, delim);
+	if (pos >= strlen(server_str))
+		return -1;
+
 	port = strtol(&server_str[pos+1], &endptr, 0);
 	if (unlikely(&server_str[pos+1] == endptr) || unlikely(*endptr != '\0'))
 		return -1;
 
 	memcpy(server_ip, server_str, pos);
+	server_ip[pos] = '\0';
 	*server_port = port;
 	RTE_LOG(DEBUG, APP, "Set server ip   = %s\n", server_ip);
 	RTE_LOG(DEBUG, APP, "Set server port = %d\n", *server_port);
@@ -352,6 +359,8 @@ static int
 parse_app_args(int argc, char *argv[])
 {
 	int cnt;
+	int proc_flg = 0;
+	int server_flg = 0;
 	int option_index, opt;
 	const int argcopt = argc;
 	char *argvopt[argcopt];
@@ -385,6 +394,7 @@ parse_app_args(int argc, char *argv[])
 				usage(progname);
 				return -1;
 			}
+			proc_flg = 1;
 			break;
 		case 's':
 			if (parse_app_server(optarg, g_startup_param.server_ip,
@@ -392,6 +402,7 @@ parse_app_args(int argc, char *argv[])
 				usage(progname);
 				return -1;
 			}
+			server_flg = 1;
 			break;
 		default:
 			usage(progname);
@@ -400,6 +411,11 @@ parse_app_args(int argc, char *argv[])
 		}
 	}
 
+	/* Check mandatory parameters */
+	if ((proc_flg == 0) || (server_flg == 0)) {
+		usage(progname);
+		return -1;
+	}
 	RTE_LOG(INFO, APP, "application arguments value. (process id = %d, config = %s, server = %s:%d)\n",
 			g_startup_param.process_id,
 			config_file_path,
@@ -954,13 +970,17 @@ ut_main(int argc, char *argv[])
 		RTE_LOG(INFO, APP, "[Press Ctrl-C to quit ...]\n");
 
 		/* loop */
+		int ret_do = 0;
 #ifndef USE_UT_SPP_VF
 		while(likely(g_core_info[main_lcore_id].status != SPP_CORE_STOP_REQUEST)) {
 #else
 		{
 #endif
 			/* コマンド受付 */
-			spp_command_proc_do();
+			ret_do = spp_command_proc_do();
+			if (unlikely(ret_do != 0)) {
+				break;
+			}
 
 			/* CPUを占有しない様に1秒スリープ */
 			sleep(1);
@@ -968,6 +988,11 @@ ut_main(int argc, char *argv[])
 #ifdef SPP_RINGLATENCYSTATS_ENABLE /* RING滞留時間 */
 			print_ring_latency_stats();
 #endif /* SPP_RINGLATENCYSTATS_ENABLE */
+		}
+
+		/* エラー終了 */
+		if (unlikely(ret_do != 0)) {
+			break;
 		}
 
 		/* 正常終了 */

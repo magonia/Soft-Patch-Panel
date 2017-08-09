@@ -3,6 +3,7 @@
     {
       "name": "vf0",
       "num_vhost": 3,
+      "num_ring": 6,
       "functions":[
         {
           "core": 1,
@@ -27,7 +28,7 @@
           "core": 4,
           "type": "classifier_mac",
           "rx_port": "nic0",
-          "tx_port_table": "classifier_mac_table"
+          "tx_port": ["ring0","ring1"]
         },
         {
           "core": 5,

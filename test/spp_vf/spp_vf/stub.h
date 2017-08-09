@@ -23,6 +23,8 @@ if(strcmp(# l, "DEBUG") != 0 )       \
 #undef RTE_LCORE_FOREACH_SLAVE
 #define RTE_LCORE_FOREACH_SLAVE(i) for (i = 0; i < 32; i++)
 
+extern int stub_ret_spp_classifier_mac_update;
+
 extern int stub_ret_rte_ring_lookup;
 extern int stub_ret_rte_eth_from_ring;
 extern int stub_ret_rte_mempool_lookup;
