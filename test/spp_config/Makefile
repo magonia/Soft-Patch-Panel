@@ -17,20 +17,12 @@ clean_dpdk:
 
 all:
 	@$(MAKE) -f "./mk/build_spp_config.mk"
-	@$(MAKE) -f "./mk/build_spp_vf.mk"
 
 clean:
 	@$(MAKE) -f "./mk/build_spp_config.mk" "clean"
-	@$(MAKE) -f "./mk/build_spp_vf.mk" "clean"
 
 # spp_config
 spp_config_test:
 	@$(MAKE) -f "./mk/build_spp_config.mk"
 spp_config_clean:
 	@$(MAKE) -f "./mk/build_spp_config.mk" "clean"
-
-# spp_vf
-spp_vf_test:
-	@$(MAKE) -f "./mk/build_spp_vf.mk"
-spp_vf_clean:
-	@$(MAKE) -f "./mk/build_spp_vf.mk" "clean"
