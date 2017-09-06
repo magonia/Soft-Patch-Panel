@@ -1,0 +1,121 @@
+■パターン1参考
+パターン1の場合、コア番号を指定している為、コアの管理を使用者が細かく行う必要がある。
+本パターンはコアの管理を簡略化を考えた場合のパターンとなる。
+(なお、パターン1のみ記載しているが、パターン2でも同様の識別名称で処理を行う事は可能。)
+
+[[メリット／デメリット]]
+・メリット
+　・元のパターンと比べると、使用者がコアのどこが空いているかなどを意識する必要がなくなる。
+　・番号指定のパラメータがなくなり、設定内容が分かり易い。
+
+・デメリット
+　・元のパターンと比べるとsppプロセス側の処理が増える。
+　・コア番号がなくなった事により、SPPコンポーネントがどのCPUを使用しているか確認できない。
+　　(性能が出ない場合などにCPU使用率を見辛くなる。ただ、状態取得でコア番号を出力しておけば問題なし。)
+
+[[Json形式での記述例]]
+・設定例
+　・指示(コマンドライブラリ⇒sppプロセス)
+　　設定は複数まとめて送信可能。
+{
+  "commands": [
+    {
+      "command": "add",
+      "parameter": [ "ring0" ]
+    },
+    {　// parameterの1つ目にコア番号の代わりに名前を設定
+      "command": "component",
+      "parameter": [ "classifier1", "classifier", "nic0", "ring0", "ring1", "ring2" ]
+    },
+    {
+      "command": "component",
+      "parameter": [ "merge1", "merge", "ring3", "ring4", "ring5", "nic0" ]
+    },
+    {
+      "command": "component",
+      "parameter": [ "forward1", "forward", "ring0", "vhost0" ]
+    },
+    {　// 停止時には以前設定した名前を記載
+      "command": "component",
+      "parameter": [ "classifier2", "none" ]
+    },
+    {
+      "command": "classifier_table",
+      "parameter": [ "mac", "00:11:22:33:44:55", "ring0" ]
+    },
+    {
+      "command": "classifier_table",
+      "parameter": [ "mac", "00:11:22:33:44:55", "unuse" ]
+    },
+    {
+      "command": "flush",
+      "num_parameter": 0
+    },
+    {
+      "command": "forward",
+      "num_parameter": 0
+    },
+    {
+      "command": "stop",
+      "num_parameter": 0
+    }
+  }
+}
+　・応答(sppプロセス⇒コマンドライブラリ)
+　　パターン1と変わらず。省略。
+
+・プロセス番号取得例
+　パターン1と変わらず。省略。
+
+・状態取得例
+　・指示(コマンドライブラリ⇒sppプロセス)
+　　パターン1と変わらず。省略。
+
+　・応答(sppプロセス⇒コマンドライブラリ)
+　　コア番号を記載していた箇所が識別名称となる。
+{
+  "result": [ 0 ],　　　　　　　　　　　　　 // 成(0)否(-1)を返却
+  "info": {
+    "process": 0,　　　　　　　　　　　　　　// プロセス番号
+    "num_nic": 2,　　　　　　　　　　　　　　// プロセス内で使用可能なNICの数(Primaryプロセスで設定した数)
+    "nic": [ 0, 1 ],　　　　　　　　　　　　 // プロセス内で使用可能なNICのポート番号(NICは全プロセス共通でDPDKの初期化時に0～NICの数分設定される)
+    "num_vhost": 3,　　　　　　　　　　　　　// プロセス内で使用可能なVHOSTの数(addコマンドで登録した数)
+    "vhost": [ 0, 1, 2 ],　　　　　　　　　　// プロセス内で使用可能なVHOSTのポート番号(addコマンドで登録したvhostの番号)
+    "num_ring": 6,　　　　　　　　　　　　　 // プロセス内で使用可能なRINGの数(addコマンドで登録した数)
+    "ring": [ 0, 1, 2, 3, 4, 5 ],　　　　　　// プロセス内で使用可能なRINGのポート番号(addコマンドで登録したringの番号)
+    "core": [
+      {
+        "name": "classifier1",　　　　　　　 // 識別名称
+        "core": 2,　　　　　　　　　　　　　 // コア番号
+        "type": "classifier",　　　　　　　　// SPPコンポーネント
+        "status": "forward",　　　　　　　　 // コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "nic0" ],　　　　　　　　　　// 受信ポート情報
+        "tx": [ "ring0", "ring1", "ring2" ]　// 送信ポート情報
+      },
+      {
+        "name": "merge1",　　　　　　　　　　// 識別名称
+        "core": 4,　　　　　　　　　　　　　 // コア番号
+        "type": "merge",　　　　　　　　　　 // SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "ring3", "ring4", "ring5" ], // 受信ポート情報
+        "tx": [ "nic0" ]　　　　　　　　　　 // 送信ポート情報
+      },
+      {
+        "name": "forward1",　　　　　　　　　// 識別名称
+        "core": 6,　　　　　　　　　　　　　 // コア番号
+        "type": "forward",　　　　　　　　　 // SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "ring0" ],　　　　　　　　　 // 受信ポート情報
+        "tx": [ "vhost0" ]　　　　　　　　　 // 送信ポート情報
+      },
+      {
+        "name": "none",　　　　　　　　　　　// 識別名称
+        "core": 8,　　　　　　　　　　　　　 // コア番号
+        "type": "none",　　　　　　　　　　　// SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [],　　　　　　　　　　　　　　// 受信ポート情報
+        "tx": []　　　　　　　　　　　　　　 // 送信ポート情報
+      }
+    ]
+  }
+}
