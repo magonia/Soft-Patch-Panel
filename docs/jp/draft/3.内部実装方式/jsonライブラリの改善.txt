@@ -1,48 +1,48 @@
-���T�v
-�{�e�L�X�g�́AJansson�p��json_path_get�֐���SPP�Ŏg�p���Ȃ��l�ɏC�����A
-Jansson�̃p�b�P�[�W(libjansson-dev)�Œ񋟂���Ă���o�C�i���œ��삳���鎖���ړI�ƂȂ�B
+■概要
+本テキストは、Jansson用のjson_path_get関数をSPPで使用しない様に修正し、
+Janssonのパッケージ(libjansson-dev)で提供されているバイナリで動作させる事が目的となる。
 
-SPP��json_path_get���g�p���Ȃ��l�ɂ���C���̕��@�Ƃ���2��ނ���A���ꂼ�ꉺ�L�̗l�ȏC�����e���K�v�ƂȂ�B
-�Ȃ��A��ԑ傫�ȏC�����e���A�����Ƃ�json_path_get�𑼊֐��֒u��������C���ƂȂ�ׁA�C���ʂ͂قړ����ƂȂ�B
-�@json_path_get��json_object_get�ɒu��������B
-�@�C�����e�@�Fjson_path_get���g�p���Ă���ӏ���json_object_get�ɒu��������B
-�@�@�@�@�@�@�@json_path_get�̑������Ɏw�肷�镶���񂪂��̂܂܎g�p�ł��Ȃ��ׁA��������ύX����B(spp_config.c�̐擪�ɂ���JSONPATH_����n�܂�define)
-�@�@�@�@�@�@�@CUNIT�̃\�[�X��json_path_get�̎g�p�ӏ���json_object_get�œ��삷��p�ɏC������B
-�Ajson_path_get�Ɠ��l�̏������s����֊֐����쐬���Ajson_path_get�ƒu��������B
-�@�C�����e�@�Fjson_path_get�̑�֊֐����쐬����B
-�@�@�@�@�@�@�@json_path_get���g�p���Ă���ӏ���V�֐��ɒu��������B
-�@�@�@�@�@�@�@CUNIT�ɐV�֐��p�̃\�[�X��ǉ�����Bjson_path_get���g�p���Ă���ӏ���V�֐��ɒu��������B
+SPPでjson_path_getを使用しない様にする修正の方法として2種類あり、それぞれ下記の様な修正内容が必要となる。
+なお、一番大きな修正内容が、両方ともjson_path_getを他関数へ置き換える修正となる為、修正量はほぼ同じとなる。
+①json_path_getをjson_object_getに置き換える。
+　修正内容　：json_path_getを使用している箇所をjson_object_getに置き換える。
+　　　　　　　json_path_getの第二引数に指定する文字列がそのまま使用できない為、文字列も変更する。(spp_config.cの先頭にあるJSONPATH_から始まるdefine)
+　　　　　　　CUNITのソースでjson_path_getの使用箇所をjson_object_getで動作する用に修正する。
+②json_path_getと同様の処理を行う代替関数を作成し、json_path_getと置き換える。
+　修正内容　：json_path_getの代替関数を作成する。
+　　　　　　　json_path_getを使用している箇所を新関数に置き換える。
+　　　　　　　CUNITに新関数用のソースを追加する。json_path_getを使用している箇所を新関数に置き換える。
 
-�����_�ł͂ǂ����I��ł����͂قƂ�ǂȂ��ׁA����͇A�̏C�����s�����j�Ƃ���B
+現時点ではどちらを選んでも差はほとんどない為、今回は②の修正を行う方針とする。
 
-��json_path_get�̑�֊֐�
-��֊֐��ł���Ajson_path_get���g�p���Ă���ӏ��ցA�u��������`�Ŏg�p����ׁA
-�p�����[�^�Ɩ߂�l�͓����Ƃ���K�v������B
+■json_path_getの代替関数
+代替関数であり、json_path_getを使用している箇所へ、置き換える形で使用する為、
+パラメータと戻り値は同じとする必要がある。
 
-[����]
-�E�p�����[�^2�֐ݒ�\�ȕ������1024�܂łƂ���B(json_path_get�͓��I�o�b�t�@���擾���Ă���̂ŁA�����ƂȂ�B)
-�E�p�����[�^2�֐ݒ肷�镶����̋L�q�`���́Ajson_path_get�Ɠ����Ƃ���B
-�@(������̐擪��'$'����n�܂�A�p�����[�^���̂̏�w�Ɖ��w��'.'�łȂ��A�z��̗v�f���擾�������ꍇ�̓p�����[�^���̂̌��'[�v�f�ԍ�]'��t����B)
+[制限]
+・パラメータ2へ設定可能な文字列は1024までとする。(json_path_getは動的バッファを取得しているので、差分となる。)
+・パラメータ2へ設定する文字列の記述形式は、json_path_getと同じとする。
+　(文字列の先頭は'$'から始まり、パラメータ名称の上層と下層は'.'でつなぎ、配列の要素を取得したい場合はパラメータ名称の後に'[要素番号]'を付ける。)
 
-[�p�����[�^]
-�p�����[�^1�FJson�I�u�W�F�N�g�̃A�h���X
-�p�����[�^2�FJson�`���ł̃p�X
+[パラメータ]
+パラメータ1：Jsonオブジェクトのアドレス
+パラメータ2：Json形式でのパス
 
-[�߂�l]
-OK�F�p�����[�^2�Ŏw�肵���p�X��Json�I�u�W�F�N�g�̃A�h���X
-NG�FNULL
+[戻り値]
+OK：パラメータ2で指定したパスのJsonオブジェクトのアドレス
+NG：NULL
 
-[��܂��ȏ���]
-�p�����[�^2�̕������'.'�ŕ������A���������e������ŁA
-'[]'�������ꍇ��json_object_get�A'[]'������ꍇ��json_array_get���g�p����Json�I�u�W�F�N�g���擾���Ă����A
-�Ō�Ɏ擾����Json�I�u�W�F�N�g�̃A�h���X��ԋp����B
-�r���ŃG���[�ƂȂ����ꍇ��NULL��ԋp����B
+[大まかな処理]
+パラメータ2の文字列を'.'で分解し、分解した各文字列で、
+'[]'が無い場合はjson_object_get、'[]'がある場合はjson_array_getを使用してJsonオブジェクトを取得していき、
+最後に取得したJsonオブジェクトのアドレスを返却する。
+途中でエラーとなった場合はNULLを返却する。
 
-���C���ӏ�
-���L��json_path_get���g�p���Ă���ӏ����L�ڂ���B
-���L�ȊO�ł̃\�[�X�C���́A�V�K�����ƂȂ�Ajson_path_get�̑�֊֐��ƁA��֊֐����`�F�b�N����ׂ�CUNIT�̃\�[�X�ƂȂ�B
+■修正箇所
+下記にjson_path_getを使用している箇所を記載する。
+下記以外でのソース修正は、新規部分となり、json_path_getの代替関数と、代替関数をチェックする為のCUNITのソースとなる。
 
-�ESPP��
+・SPP側
 src/vf/spp_config.c:34: json_t *tmp_obj = json_path_get(obj, path);
 src/vf/spp_config.c:61: json_t *tmp_obj = json_path_get(obj, path);
 src/vf/spp_config.c:207:        json_t *classifier_obj = json_path_get(obj, JSONPATH_CLASSIFIER_TABLE);
@@ -53,7 +53,7 @@ src/vf/spp_config.c:476:                        json_t *array_obj = json_path_ge
 src/vf/spp_config.c:548:        json_t *proc_table_obj = json_path_get(obj, JSONPATH_PROC_TABLE);
 src/vf/spp_config.c:602:        json_t *array_obj = json_path_get(proc_obj, JSONPATH_FUNCTIONS);
 
-�ECUNIT��
+・CUNIT側
 test/spp_config/spp_config_test.c:647:    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[7]");
 test/spp_config/spp_config_test.c:678:    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[3]");
 test/spp_config/spp_config_test.c:705:    json_t *functions_obj = json_path_get(obj, "$.vfs[0].functions[5]");

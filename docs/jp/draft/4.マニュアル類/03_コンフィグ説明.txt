@@ -1,84 +1,84 @@
 
 ================================================================================
-���p�X
+■パス
 ================================================================================
 
-�R���t�B�O�̔z�u�p�X�͈ȉ��B
+コンフィグの配置パスは以下。
 
 	/usr/local/etc/spp/spp.json
 
 
 ================================================================================
-��SPP�R���|�[�l���g
+■SPPコンポーネント
 ================================================================================
 
-�E����IF����̓��̓p�P�b�g���A�o��IF�֏o�͂���@�\��L����B
-�E�ȉ��̂R��ނ������B
-	�|forward			�P���͂P�o�́B
-	�|merge				�����͂P�o�́B
-	�|classifier_mac	�P���͂��o�́B�o�͂̐U�蕪���͈���MAC�A�h���X�Ŏ��{�B
+・入力IFからの入力パケットを、出力IFへ出力する機能を有する。
+・以下の３種類を実装。
+	−forward			１入力１出力。
+	−merge				ｎ入力１出力。
+	−classifier_mac	１入力ｎ出力。出力の振り分けは宛先MACアドレスで実施。
 
-�E�e�R���|�[�l���g�ɂ�CPU�R�A�����蓖�Ă�B
-	forward�^forward�͓���R�A�̊��蓖�Ă��\�B
-	���̑��g�ݍ��킹�iforward�^merge�Aforward�^classifier_mac�Ȃǁj��
-	����R�A�̊��蓖�Ă͕s�B
+・各コンポーネントにはCPUコアを割り当てる。
+	forward／forwardは同一コアの割り当てが可能。
+	その他組み合わせ（forward／merge、forward／classifier_macなど）は
+	同一コアの割り当ては不可。
 
-�Eclassifier_mac�͂P�R���t�B�O�łP�̂ݎg�p�\�B
-
-
-================================================================================
-�����o�̓|�[�g
-================================================================================
-
-�ESPP�R���|�[�l���g�ւ̓��o�͂Ɏg�p����|�[�g�B
-�E�ȉ��̂R��ށB
-	�|nic		����NIC�BSPP�N���O��DPDK�Ńo�C���h����Ă��邱�ƁB
-	�|vhost		vhost�BVM�̉��zNIC�Ɛڑ�����B
-	�|ring		SPP�R���|�[�l���g�ԂŎg�p����L���[�B
-
-�E�R���t�B�O�Ŏw�肷��ꍇ�A�ȉ��̃t�H�[�}�b�g���g�p����B
-
-	�g�|�[�g��ʁh�{ �g�|�[�g�ԍ��h
-		��jnic0�Avhost0�Aring0
-
-	�|�[�g��ʁF
-		�|�[�g�̎�ʂ��w�肷�镶����Bnic�^vhost�^ring
-
-	�|�[�g�ԍ��F
-		�e�|�[�g��ʓ��Ń|�[�g���w�肷��ԍ��B
-			�|nic	
-				dpdk-devbind.py --status��
-				"Network devices using DPDK-compatible driver"���̕\�����B0�x�[�X�B
-
-			�|vhost
-				0����̐����B�A���Ŏg�p����K�v�͂Ȃ��B
-				��spp_vf�v���Z�X�Ŏg�p����ԍ��Ƃ��������Ȃ����ƁB
-				�g�p����vhost�̌������R���t�B�O��num_vhost(��q)�ȉ��ł��邱�ƁB
-				�ڑ�����VM��VM�ݒ�XML�ɋL�ڂ���VHOST�ݒ�̐����ƍ��킹��B
-
-			�|ring
-				0����spp_primary�R�}���h���C���I�v�V�����g-n(--�Ȍ�)�h�̐ݒ�l�����̐����B
-				�A���Ŏg�p����K�v�͂Ȃ��B
-				�g�p����ring�̌������R���t�B�O��num_ring(��q)�ȉ��ł��邱�ƁB
-
-
-�ESPP�R���|�[�l���g�Ԃœ���̓��o�̓|�[�g�Ƃ��Ă̎g�p�͕s�B
-	�Ⴆ�΁Aforward�̓��̓|�[�g�^merge�̓��̓|�[�g��o��ring0�ɂ͂ł��Ȃ�
-	forward�̏o�̓|�[�g�^merge�̓��̓|�[�g�̂悤�ɓ��o�͂��قȂ�ΉB
+・classifier_macは１コンフィグで１個のみ使用可能。
 
 
 ================================================================================
-��spp.json����
+■入出力ポート
 ================================================================================
 
-�L�ڗ�̍\���͈ȉ��̑z��B
+・SPPコンポーネントへの入出力に使用するポート。
+・以下の３種類。
+	−nic		物理NIC。SPP起動前にDPDKでバインドされていること。
+	−vhost		vhost。VMの仮想NICと接続する。
+	−ring		SPPコンポーネント間で使用するキュー。
 
-	����F M:merge, C:classifier_mac, F:forward, r:ring
+・コンフィグで指定する場合、以下のフォーマットを使用する。
+
+	“ポート種別”＋ “ポート番号”
+		例）nic0、vhost0、ring0
+
+	ポート種別：
+		ポートの種別を指定する文字列。nic／vhost／ring
+
+	ポート番号：
+		各ポート種別内でポートを指定する番号。
+			−nic	
+				dpdk-devbind.py --statusの
+				"Network devices using DPDK-compatible driver"欄の表示順。0ベース。
+
+			−vhost
+				0からの数字。連続で使用する必要はない。
+				他spp_vfプロセスで使用する番号とも競合しないこと。
+				使用するvhostの個数が当コンフィグのnum_vhost(後述)以下であること。
+				接続するVMのVM設定XMLに記載するVHOST設定の数字と合わせる。
+
+			−ring
+				0からspp_primaryコマンドラインオプション“-n(--以後)”の設定値未満の数字。
+				連続で使用する必要はない。
+				使用するringの個数が当コンフィグのnum_ring(後述)以下であること。
+
+
+・SPPコンポーネント間で同種の入出力ポートとしての使用は不可。
+	例えば、forwardの入力ポート／mergeの入力ポートを双方ring0にはできない
+	forwardの出力ポート／mergeの入力ポートのように入出力が異なれば可。
+
+
+================================================================================
+■spp.json説明
+================================================================================
+
+記載例の構成は以下の想定。
+
+	略語： M:merge, C:classifier_mac, F:forward, r:ring
 
 +---------+  +-----------------------------------------------------------------------------------------------+
-|  �Ό�   |  | SPP-HOST                                                                                      |
+|  対向   |  | SPP-HOST                                                                                      |
 |         |  |              +------------------------------------------------------+  +-------------------+  |
-|         |  |              | spp_vf�v���Z�X                                       |  |                   |  |
+|         |  |              | spp_vfプロセス                                       |  |                   |  |
 | +-----+ |  | +--------+   | +---+  +----+  +---+     +----+  +---+  +----------+ |  | +----------+      |  |
 | | nic <------>  nic0  +-----> M +--> r8 +--> C +-----> r0 +--> F +-->          +------>          |      |  |
 | +-----+ |  | +----+---+   | +-^-+  +----+  +-+-+     +----+  +---+  |          | |  | |          |      |  |
@@ -120,39 +120,39 @@
 +---------+  +-----------------------------------------------------------------------------------------------+
 
 
-�������i// ����n�܂�j���L�ڂ��Ă��܂����A
-	JSON�t�H�[�}�b�g�̓R�����g���T�|�[�g���Ă��܂���̂Ŗ{�L�ڂ��g�p����ꍇ�͍폜�������B
+※説明（// から始まる）を記載していますが、
+	JSONフォーマットはコメントをサポートしていませんので本記載を使用する場合は削除下さい。
 
-�����ɋL�ڂ̂Ȃ����̂͒�^������B
+※特に記載のないものは定型文字列。
 
-���{���spp.json�͈ȉ�����擾�\�ł��B
+※本例のspp.jsonは以下から取得可能です。
 	https://github.com/ntt-ns/Soft-Patch-Panel/blob/master/test/spp_config/spp_config/spp.json
 
 {
   "vfs": [
     {
       "name": "vf0",
-      "num_vhost": 4,		// �g�p����vhost���B
-      "num_ring": 9,		// �g�p����ring���B
-      "functions":[			// SPP�R���|�[�l���g�iforward�^merge�^classifier�j�̃R�A�����^���o�̓|�[�g�Ȃǂ̔z��B
+      "num_vhost": 4,		// 使用するvhost数。
+      "num_ring": 9,		// 使用するring数。
+      "functions":[			// SPPコンポーネント（forward／merge／classifier）のコア割当／入出力ポートなどの配列。
         {
-          "core": 2,								// SPP�R���|�[�l���g�Ɋ��蓖�Ă�R�A�ԍ��B
-          "type": "merge",							// SPP�R���|�[�l���g��ʁiforward�^merge�^classifier_mac�j
-          "rx_port": ["nic0", "nic1"],				// ���̓|�[�g�z��Bmerge�͕����ݒ�\�B1�̏ꍇ���z��`���ŋL�ځB
-          "tx_port": "ring8"						// �o�̓|�[�g�Bmerge�͂P�ݒ�\�B
+          "core": 2,								// SPPコンポーネントに割り当てるコア番号。
+          "type": "merge",							// SPPコンポーネント種別（forward／merge／classifier_mac）
+          "rx_port": ["nic0", "nic1"],				// 入力ポート配列。mergeは複数設定可能。1つの場合も配列形式で記載。
+          "tx_port": "ring8"						// 出力ポート。mergeは１つ設定可能。
         },
         {
-          "core": 3,								// SPP�R���|�[�l���g�Ɋ��蓖�Ă�R�A�ԍ��B
-          "type": "classifier_mac",					// SPP�R���|�[�l���g�Ɋ��蓖�Ă�R�A�ԍ��B
-          "rx_port": "ring8",						// ���̓|�[�g�Bclassifier_mac�͂P�ݒ�\�B
-          "tx_port_table": "classifier_mac_table"	// MAC�U�蕪���e�[�u���w��B�������͒�^������B
+          "core": 3,								// SPPコンポーネントに割り当てるコア番号。
+          "type": "classifier_mac",					// SPPコンポーネントに割り当てるコア番号。
+          "rx_port": "ring8",						// 入力ポート。classifier_macは１つ設定可能。
+          "tx_port_table": "classifier_mac_table"	// MAC振り分けテーブル指定。現実装は定型文字列。
         },
 
         {
-          "core": 4,								// SPP�R���|�[�l���g�Ɋ��蓖�Ă�R�A�ԍ��B
-          "type": "forward",						// SPP�R���|�[�l���g��ʁiforward�^merge�^classifier_mac�j
-          "rx_port": "ring0",						// ���̓|�[�g�Bforward�͂P�ݒ�\�B
-          "tx_port": "vhost0"						// ���̓|�[�g�Bforward�͂P�ݒ�\�B
+          "core": 4,								// SPPコンポーネントに割り当てるコア番号。
+          "type": "forward",						// SPPコンポーネント種別（forward／merge／classifier_mac）
+          "rx_port": "ring0",						// 入力ポート。forwardは１つ設定可能。
+          "tx_port": "vhost0"						// 入力ポート。forwardは１つ設定可能。
         },
         {
           "core": 5,
@@ -212,12 +212,12 @@
       ]
     }
   ],
-  "classifier_table": {						// classifier_mac�Ŏg�p����e�[�u�����B��^������B
-    "name":"classifier_mac_table",			// MAC�U�蕪���e�[�u�����B�������͒�^������B
-    "table": [								// �U�蕪���Ɏg�p����MAC�A�h���X�ƐU�蕪����|�[�g�̔z��B
+  "classifier_table": {						// classifier_macで使用するテーブル名。定型文字列。
+    "name":"classifier_mac_table",			// MAC振り分けテーブル名。現実装は定型文字列。
+    "table": [								// 振り分けに使用するMACアドレスと振り分け先ポートの配列。
       {
-        "mac":"52:54:00:12:34:56",			// �U�蕪���Ώ�MAC�A�h���X�B
-        "port":"ring0"						// �U�蕪����|�[�g�B�P�ݒ�\�B
+        "mac":"52:54:00:12:34:56",			// 振り分け対象MACアドレス。
+        "port":"ring0"						// 振り分け先ポート。１つ設定可能。
       },
       {
         "mac":"52:54:00:12:34:57",

@@ -1,118 +1,118 @@
 
 ================================================================================
-���T�v
+■概要
 ================================================================================
 
-���i�K�Ƃ��āA
-���I�ȐU��MAC�A�h���X�̓o�^�^�o�^��������������B
+第一段階として、
+動的な振分MACアドレスの登録／登録解除を実装する。
 
-	��q�̑O����A
-	VF�@�\�̎����Ƃ��Ă�SPP�����̃R���|�[�l���g�z�u�^�z�����͎̂��O�ɑz����\�Ȃ��߁A
-	�R���t�B�O�t�@�C���ɂ��ÓI�ݒ�s���B
+	後述の前提より、
+	VF機能の実現としてはSPP内部のコンポーネント配置／配線自体は事前に想定も可能なため、
+	コンフィグファイルによる静的設定行う。
 
-����NIC�ɑΉ�����classifier�^merge�^forward(vhost)��1�v���Z�X�B
-
-
-================================================================================
-���O��
-================================================================================
-
-��VA�lPPT���
-�E����NIC�Avhost���́A�R���t�B�O�Ŏw��B�ÓI�Ɋ��蓖�āB
-�Evhost�ƕ���NIC�Ƃ̑Ή��͌Œ�B����NIC����vhost���́A�R���t�B�O�B
-�E����NIC�Avhost�̓��I�ǉ��A�폜�́A�Ȃ��B
-�ESPP-VF �́A�ŏ��Ɉ��N�����āA���̂܂܂̑z��B
-�E�u���̎��̃X�e�b�v�ivhost�Ԃ�ring�Őڑ��j�v�ɂ͖��Ή��B
-
-�����̑�
-�E����NIC����SPP-VF�𕪂���B
-�ESPP-AGENT�͕���NIC��SPP-VF�v���Z�X�̑Ή����Ǘ����A�K�؂�SPP-VF�v���Z�X��
-  �v���𑗐M����z��B
-�Evhost��RX/TX�������g�p���邽�߂ɓ���v���Z�X�ł���K�v�����邽�߁A
-  ����NIC�ɑΉ�����classifier�^merge�^forward(vhost)��1�v���Z�X�Ƃ���B
-  �i�\���ȕ։��̂��߂܂Ƃ߂�j
+物理NICに対応するclassifier／merge／forward(vhost)は1プロセス。
 
 
 ================================================================================
-���ÓI���� (SPP-VF�N��������)
+■前提
 ================================================================================
 
-�Espp_primary�Aspp_vf�Ŏg�p����CPU�R�A�Z�b�g�B
-�ESPP�R���|�[�l���g�Ɋ��蓖�Ă�CPU�R�A�ԍ��B
-�ESPP�R���|�[�l���g�̔z�u�A����єz���iring�Ȃǂ̐ڑ��j
+○VA様PPTより
+・物理NIC、vhost数は、コンフィグで指定。静的に割り当て。
+・vhostと物理NICとの対応は固定。物理NIC毎のvhost数は、コンフィグ。
+・物理NIC、vhostの動的追加、削除は、なし。
+・SPP-VF は、最初に一回起動して、そのままの想定。
+・「その次のステップ（vhost間をringで接続）」には未対応。
 
-
-================================================================================
-�����I���� (SPP-VF�N����ɐݒ�\)
-================================================================================
-
-�E�U��MAC�A�h���X�e�[�u���v�f�iMAC�A�h���X�Ƒ��M��̃y�A�j
-
-
-================================================================================
-���R�}���h����
-================================================================================
-
-�E1�d�����̃R�}���h�����̐����͈ȉ��Ƃ���B
-	�R�}���h���F 32
-	�d����    �F 6400����  (1�R�}���h200�������x��z��)
+○その他
+・物理NIC毎にSPP-VFを分ける。
+・SPP-AGENTは物理NICとSPP-VFプロセスの対応を管理し、適切なSPP-VFプロセスへ
+  要求を送信する想定。
+・vhostのRX/TX両方を使用するために同一プロセスである必要があるため、
+  物理NICに対応するclassifier／merge／forward(vhost)は1プロセスとする。
+  （構成簡便化のためまとめる）
 
 
 ================================================================================
-���L�ڏ�̒���
+■静的決定 (SPP-VF起動時決定)
 ================================================================================
 
-�E������AJSON�������g//�h�ɂăR�����g���ɋL�ځB
-  �iJSON�t�H�[�}�b�g�ł͂Ȃ��̂ŃR�s�y���Ӂj
+・spp_primary、spp_vfで使用するCPUコアセット。
+・SPPコンポーネントに割り当てるCPUコア番号。
+・SPPコンポーネントの配置、および配線（ringなどの接続）
 
-
-
-
-�����ȉ��菇�C���[�W������������������������������������������������������������
 
 ================================================================================
-���R���t�B�O�t�@�C���p�� ��SPP-HOST�}�V��
+■動的決定 (SPP-VF起動後に設定可能)
 ================================================================================
 
-��sprint3���_�ł̃t�H�[�}�b�g���x�[�X�ɂ��Ă��܂����A
-  OpenStack�Ή��̂��ߏ����ύX���Ă��܂��B�ȍ~�̐݌v�ɂ��ύX�\������B
+・振分MACアドレステーブル要素（MACアドレスと送信先のペア）
 
-��jNIC1�p
+
+================================================================================
+■コマンド制限
+================================================================================
+
+・1電文内のコマンド数等の制限は以下とする。
+	コマンド数： 32
+	電文長    ： 6400文字  (1コマンド200文字程度を想定)
+
+
+================================================================================
+■記載上の注意
+================================================================================
+
+・説明上、JSON説明を“//”にてコメント風に記載。
+  （JSONフォーマットではないのでコピペ注意）
+
+
+
+
+＜＜以下手順イメージ＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞＞
+
+================================================================================
+■コンフィグファイル用意 ＠SPP-HOSTマシン
+================================================================================
+
+※sprint3時点でのフォーマットをベースにしていますが、
+  OpenStack対応のため少し変更しています。以降の設計により変更可能性あり。
+
+例）NIC1用
 
 	{
 	  "vfs": [
 	    {
 	      "name": "vf1",
-	      "num_vhost": 2,	// ����NIC�ƑΉ�����vhost��������B��Ƃ���2�B
-	      "num_ring": 4,	// vf�\���͎g�pSPP�R���|�[�l���g�����܂��Ă��邽�߁A
-	      					// �gnum_vhost x 2�h�B
-	      					// 1vhost������ȉ���2ring���K�v�B
-	      					// 	�Eclassifier�^forward
-	      					// 	�Eforward�^merge
+	      "num_vhost": 2,	// 物理NICと対応するvhost数を決定。例として2個。
+	      "num_ring": 4,	// vf構成は使用SPPコンポーネントが決まっているため、
+	      					// “num_vhost x 2”。
+	      					// 1vhostあたり以下の2ringが必要。
+	      					// 	・classifier／forward
+	      					// 	・forward／merge
 	      "functions":[
 	       {
 	          "core": 2,
 	          "type": "classifier_mac",
-	          "rx_port": "nic0",				// ����NIC��vhost�̑Ή����ÓI�ȈׁA
-	          									// classifier�̓��͂ƂȂ�nic���ÓI�Ɍ��߂���B
+	          "rx_port": "nic0",				// 物理NICとvhostの対応が静的な為、
+	          									// classifierの入力となるnicも静的に決められる。
 
-	          "tx_port": ["ring0", "ring2"]		// ����NIC��vhost�̑Ή����ÓI�ȈׁA
-	          									// classifier�̏o�͂ƂȂ�ring���ÓI�Ɍ��߂���B
+	          "tx_port": ["ring0", "ring2"]		// 物理NICとvhostの対応が静的な為、
+	          									// classifierの出力となるringも静的に決められる。
 	        },
 	        {
 	          "core": 3,
 	          "type": "merge",
-	          "rx_port": ["ring1", "ring3"],	// ����NIC��vhost�̑Ή����ÓI�ȈׁA
-	          									// merge�����͂Ƃ���ring���ÓI�Ɍ��߂���B
+	          "rx_port": ["ring1", "ring3"],	// 物理NICとvhostの対応が静的な為、
+	          									// mergeが入力とするringも静的に決められる。
 
-	          "tx_port": "nic0"					// ����NIC��vhost�̑Ή����ÓI�ȈׁA
-	          									// merge�̏o�͂ƂȂ�nic���ÓI�Ɍ��߂���B
+	          "tx_port": "nic0"					// 物理NICとvhostの対応が静的な為、
+	          									// mergeの出力となるnicも静的に決められる。
 	        },
 
 
-	        // ����NIC��vhost�̑Ή����ÓI�ȈׁAforward���ÓI�Ɍ��߂���B
+	        // 物理NICとvhostの対応が静的な為、forwardも静的に決められる。
 
-	        // vhost0�p
+	        // vhost0用
 	        {
 	          "core": 4,
 	          "type": "forward",
@@ -126,7 +126,7 @@
 	          "tx_port": "ring1"
 	        },
 
-	        // vhost1�p
+	        // vhost1用
 	        {
 	          "core": 6,
 	          "type": "forward",
@@ -143,53 +143,53 @@
 	    }
 	  ]
 
-	  // �U��MAC�e�[�u���v�f�͓��I�ǉ��Ȃ̂ŋL�ڂȂ��B
+	  // 振分MACテーブル要素は動的追加なので記載なし。
 	}
 
 
 ================================================================================
-��SPP-VF�N�� ��SPP-HOST�}�V��
+■SPP-VF起動 ＠SPP-HOSTマシン
 ================================================================================
 
-��OpenStack�A�g���Aspp_primary�Aspp_vf���ɁA
-  �R���g���[���ւ̐ڑ���IP�A�h���X�^�|�[�g�ԍ���spp-agent���w�肷��z��B
+※OpenStack連携時、spp_primary、spp_vf共に、
+  コントローラへの接続先IPアドレス／ポート番号はspp-agentを指定する想定。
 
-���eSPP�v���Z�X�N���B
+○各SPPプロセス起動。
 
-	# SPP �v���C�}���N��
+	# SPP プライマリ起動
 	sudo spp_primary 
-			-c 0x02 						// �g�pCPU�Z�b�g�B�ÓI�Ɍ���B
-			-n 4 							// �ÓI
-			--socket-mem 512,512 			// �ÓI
-			--huge-dir=/run/hugepages/kvm 	// �ÓI
-			--proc-type=primary 			// �Œ�
+			-c 0x02 						// 使用CPUセット。静的に決定。
+			-n 4 							// 静的
+			--socket-mem 512,512 			// 静的
+			--huge-dir=/run/hugepages/kvm 	// 静的
+			--proc-type=primary 			// 固定
 			-- 
-			-p 0x03 						// �g�p����NIC�Z�b�g�B�ÓI�Ɍ���B
-			-n 4 							// �R���t�B�O��num_ring���l�ɐÓI�Ɍ��܂�B
-			-s 127.0.0.1:5555				// �R���g���[���ւ̐ڑ���IP�A�h���X�^�|�[�g�ԍ�
+			-p 0x03 						// 使用物理NICセット。静的に決定。
+			-n 4 							// コンフィグのnum_ring同様に静的に決まる。
+			-s 127.0.0.1:5555				// コントローラへの接続先IPアドレス／ポート番号
 
-	# SPP �Z�J���_���N���i����NIC���j
+	# SPP セカンダリ起動（物理NIC毎）
 	sudo spp_vf 
-			-c 0x3ffd 						// �g�pCPU�Z�b�g�B�ÓI�Ɍ���B
-			-n 4 							// �ÓI
-			--proc-type=secondary 			// �Œ�
+			-c 0x3ffd 						// 使用CPUセット。静的に決定。
+			-n 4 							// 静的
+			--proc-type=secondary 			// 固定
 			-- 
-			--process-id 1					// �Z�J���_���v���Z�X���ʎq�B
-			--config ./spp/spp_vf1.json		// �Ώە���NIC�ɑΉ�����ݒ�t�@�C���p�X
-			-s 127.0.0.1:5555				// �R���g���[���ւ̐ڑ���IP�A�h���X�^�|�[�g�ԍ�
+			--process-id 1					// セカンダリプロセス識別子。
+			--config ./spp/spp_vf1.json		// 対象物理NICに対応する設定ファイルパス
+			-s 127.0.0.1:5555				// コントローラへの接続先IPアドレス／ポート番号
 
 
 ================================================================================
-��SPP-AGENT�R�l�N�V�����m�� ��SPP-HOST�}�V��
+■SPP-AGENTコネクション確立 ＠SPP-HOSTマシン
 ================================================================================
 
-SPP-VF�N���ɂ��SPP-AGENT�ƃR�l�N�V�������m�������B
-���Y�R�l�N�V�������ǂ�SPP-VF�ɂ����̂��𔻕ʂ��邽�߃v���Z�X���ʎq�̎擾���s���B
+SPP-VF起動によりSPP-AGENTとコネクションが確立される。
+当該コネクションがどのSPP-VFによるものかを判別するためプロセス識別子の取得を行う。
 
-�v���Z�X���ʎq�́A
-SPP-VF�N�����̃R�}���h���C���I�v�V�����g--process-id�h�Ŏw�肵�����́B
+プロセス識別子は、
+SPP-VF起動時のコマンドラインオプション“--process-id”で指定したもの。
 
-���v���Z�X���ʎ擾
+○プロセス識別取得
 
 	{
 	  "commands": [
@@ -201,15 +201,15 @@ SPP-VF�N�����̃R�}���h���C���I�v�V�����g--process-id�h�Ŏw�肵�����́B
 
 
 ================================================================================
-��SPP VM�N�� ��SPP-HOST�}�V��
+■SPP VM起動 ＠SPP-HOSTマシン
 ================================================================================
 
-���U��MAC�A�h���X�ύX�i�z�������j
+○振分MACアドレス変更（配線相当）
 
-	SPP-AGENT���ȉ��̓d���ŐU��MAC�A�h���X��o�^�B
-	���YVM�̉��zNIC���������̏ꍇ�A�{�菇�����zNIC���J��Ԃ��B
+	SPP-AGENTより以下の電文で振分MACアドレスを登録。
+	当該VMの仮想NIC数が複数の場合、本手順を仮想NIC分繰り返す。
 
-	��jvhost0��MAC�A�h���X��00:11:22:33:44:55�̉��zNIC���ڑ������ꍇ
+	例）vhost0とMACアドレスが00:11:22:33:44:55の仮想NICが接続される場合
 
 		{
 		  "commands": [
@@ -223,8 +223,8 @@ SPP-VF�N�����̃R�}���h���C���I�v�V�����g--process-id�h�Ŏw�肵�����́B
 		      "command": "classifier_table",
 		      "type": "mac", 
 		      "value": "00:11:22:33:44:55",
-		      "port": "ring0"				// ���Yvhost��rx-ring�ԍ��͈ȉ��ŎZ�o�\�B
-		      								// �gvhost�ԍ���2�h
+		      "port": "ring0"				// 当該vhostのrx-ring番号は以下で算出可能。
+		      								// “vhost番号ｘ2”
 		    },
 		    {
 		      "command": "flush"
@@ -232,36 +232,36 @@ SPP-VF�N�����̃R�}���h���C���I�v�V�����g--process-id�h�Ŏw�肵�����́B
 		  }
 		}
 
-��SPP VM�N��
+○SPP VM起動
 
-	VM�N���B
+	VM起動。
 
-	��OpenStack�Ȃǂɂ��ASPP���e�O�Ŏ��{����邱�Ƃ�z��B
+	※OpenStackなどにより、SPP範疇外で実施されることを想定。
 
-��SPP VM�ݒ�
+○SPP VM設定
 
-	vhost�ɐڑ�����IF��UP�ȂǁB
+	vhostに接続するIFのUPなど。
 
-	��OpenStack�⎖�O�ݒ�ς�VM�C���[�W�̎g�p�Ȃǂɂ��A
-	  SPP���e�O�Ŏ��{����邱�Ƃ�z��B
+	※OpenStackや事前設定済みVMイメージの使用などにより、
+	  SPP範疇外で実施されることを想定。
 
 
 ================================================================================
-��SPP VM�N�� ��SPP-HOST�}�V��
+■SPP VM起動 ＠SPP-HOSTマシン
 ================================================================================
 
-��SPP VM��~
+○SPP VM停止
 
-	VM��~�B
+	VM停止。
 
-	��OpenStack�Ȃǂɂ��ASPP���e�O�Ŏ��{����邱�Ƃ�z��B
+	※OpenStackなどにより、SPP範疇外で実施されることを想定。
 
-���U��MAC�A�h���X�ύX�i�z�����������j
+○振分MACアドレス変更（配線解除相当）
 
-	SPP-AGENT���ȉ��̓d���ŐU��MAC�A�h���X�̓o�^�����B
-	���YVM�̉��zNIC���������̏ꍇ�A�{�菇�����zNIC���J��Ԃ��B
+	SPP-AGENTより以下の電文で振分MACアドレスの登録解除。
+	当該VMの仮想NIC数が複数の場合、本手順を仮想NIC分繰り返す。
 
-	��jMAC�A�h���X��00:11:22:33:44:55�̉��zNIC����������ꍇ
+	例）MACアドレスが00:11:22:33:44:55の仮想NICを解除する場合
 
 		{
 		  "commands": [
