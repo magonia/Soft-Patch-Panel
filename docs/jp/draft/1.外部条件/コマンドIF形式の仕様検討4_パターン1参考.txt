@@ -1,29 +1,29 @@
-���p�^�[��1�Q�l
-�p�^�[��1�̏ꍇ�A�R�A�ԍ����w�肵�Ă���ׁA�R�A�̊Ǘ����g�p�҂��ׂ����s���K�v������B
-�{�p�^�[���̓R�A�̊Ǘ����ȗ������l�����ꍇ�̃p�^�[���ƂȂ�B
-(�Ȃ��A�p�^�[��1�̂݋L�ڂ��Ă��邪�A�p�^�[��2�ł����l�̎��ʖ��̂ŏ������s�����͉\�B)
+■パターン1参考
+パターン1の場合、コア番号を指定している為、コアの管理を使用者が細かく行う必要がある。
+本パターンはコアの管理を簡略化を考えた場合のパターンとなる。
+(なお、パターン1のみ記載しているが、パターン2でも同様の識別名称で処理を行う事は可能。)
 
-[[�����b�g�^�f�����b�g]]
-�E�����b�g
-�@�E���̃p�^�[���Ɣ�ׂ�ƁA�g�p�҂��R�A�̂ǂ����󂢂Ă��邩�Ȃǂ��ӎ�����K�v���Ȃ��Ȃ�B
-�@�E�ԍ��w��̃p�����[�^���Ȃ��Ȃ�A�ݒ���e��������Ղ��B
+[[メリット／デメリット]]
+・メリット
+　・元のパターンと比べると、使用者がコアのどこが空いているかなどを意識する必要がなくなる。
+　・番号指定のパラメータがなくなり、設定内容が分かり易い。
 
-�E�f�����b�g
-�@�E���̃p�^�[���Ɣ�ׂ��spp�v���Z�X���̏�����������B
-�@�E�R�A�ԍ����Ȃ��Ȃ������ɂ��ASPP�R���|�[�l���g���ǂ�CPU���g�p���Ă��邩�m�F�ł��Ȃ��B
-�@�@(���\���o�Ȃ��ꍇ�Ȃǂ�CPU�g�p�������h���Ȃ�B�����A��Ԏ擾�ŃR�A�ԍ����o�͂��Ă����Ζ��Ȃ��B)
+・デメリット
+　・元のパターンと比べるとsppプロセス側の処理が増える。
+　・コア番号がなくなった事により、SPPコンポーネントがどのCPUを使用しているか確認できない。
+　　(性能が出ない場合などにCPU使用率を見辛くなる。ただ、状態取得でコア番号を出力しておけば問題なし。)
 
-[[Json�`���ł̋L�q��]]
-�E�ݒ��
-�@�E�w��(�R�}���h���C�u������spp�v���Z�X)
-�@�@�ݒ�͕����܂Ƃ߂đ��M�\�B
+[[Json形式での記述例]]
+・設定例
+　・指示(コマンドライブラリ⇒sppプロセス)
+　　設定は複数まとめて送信可能。
 {
   "commands": [
     {
       "command": "add",
       "parameter": [ "ring0" ]
     },
-    {�@// parameter��1�ڂɃR�A�ԍ��̑���ɖ��O��ݒ�
+    {　// parameterの1つ目にコア番号の代わりに名前を設定
       "command": "component",
       "parameter": [ "classifier1", "classifier", "nic0", "ring0", "ring1", "ring2" ]
     },
@@ -35,7 +35,7 @@
       "command": "component",
       "parameter": [ "forward1", "forward", "ring0", "vhost0" ]
     },
-    {�@// ��~���ɂ͈ȑO�ݒ肵�����O���L��
+    {　// 停止時には以前設定した名前を記載
       "command": "component",
       "parameter": [ "classifier2", "none" ]
     },
@@ -61,60 +61,60 @@
     }
   }
 }
-�@�E����(spp�v���Z�X�˃R�}���h���C�u����)
-�@�@�p�^�[��1�ƕς�炸�B�ȗ��B
+　・応答(sppプロセス⇒コマンドライブラリ)
+　　パターン1と変わらず。省略。
 
-�E�v���Z�X�ԍ��擾��
-�@�p�^�[��1�ƕς�炸�B�ȗ��B
+・プロセス番号取得例
+　パターン1と変わらず。省略。
 
-�E��Ԏ擾��
-�@�E�w��(�R�}���h���C�u������spp�v���Z�X)
-�@�@�p�^�[��1�ƕς�炸�B�ȗ��B
+・状態取得例
+　・指示(コマンドライブラリ⇒sppプロセス)
+　　パターン1と変わらず。省略。
 
-�@�E����(spp�v���Z�X�˃R�}���h���C�u����)
-�@�@�R�A�ԍ����L�ڂ��Ă����ӏ������ʖ��̂ƂȂ�B
+　・応答(sppプロセス⇒コマンドライブラリ)
+　　コア番号を記載していた箇所が識別名称となる。
 {
-  "result": [ 0 ],�@�@�@�@�@�@�@�@�@�@�@�@�@ // ��(0)��(-1)��ԋp
+  "result": [ 0 ],　　　　　　　　　　　　　 // 成(0)否(-1)を返却
   "info": {
-    "process": 0,�@�@�@�@�@�@�@�@�@�@�@�@�@�@// �v���Z�X�ԍ�
-    "num_nic": 2,�@�@�@�@�@�@�@�@�@�@�@�@�@�@// �v���Z�X���Ŏg�p�\��NIC�̐�(Primary�v���Z�X�Őݒ肵����)
-    "nic": [ 0, 1 ],�@�@�@�@�@�@�@�@�@�@�@�@ // �v���Z�X���Ŏg�p�\��NIC�̃|�[�g�ԍ�(NIC�͑S�v���Z�X���ʂ�DPDK�̏���������0�`NIC�̐����ݒ肳���)
-    "num_vhost": 3,�@�@�@�@�@�@�@�@�@�@�@�@�@// �v���Z�X���Ŏg�p�\��VHOST�̐�(add�R�}���h�œo�^������)
-    "vhost": [ 0, 1, 2 ],�@�@�@�@�@�@�@�@�@�@// �v���Z�X���Ŏg�p�\��VHOST�̃|�[�g�ԍ�(add�R�}���h�œo�^����vhost�̔ԍ�)
-    "num_ring": 6,�@�@�@�@�@�@�@�@�@�@�@�@�@ // �v���Z�X���Ŏg�p�\��RING�̐�(add�R�}���h�œo�^������)
-    "ring": [ 0, 1, 2, 3, 4, 5 ],�@�@�@�@�@�@// �v���Z�X���Ŏg�p�\��RING�̃|�[�g�ԍ�(add�R�}���h�œo�^����ring�̔ԍ�)
+    "process": 0,　　　　　　　　　　　　　　// プロセス番号
+    "num_nic": 2,　　　　　　　　　　　　　　// プロセス内で使用可能なNICの数(Primaryプロセスで設定した数)
+    "nic": [ 0, 1 ],　　　　　　　　　　　　 // プロセス内で使用可能なNICのポート番号(NICは全プロセス共通でDPDKの初期化時に0〜NICの数分設定される)
+    "num_vhost": 3,　　　　　　　　　　　　　// プロセス内で使用可能なVHOSTの数(addコマンドで登録した数)
+    "vhost": [ 0, 1, 2 ],　　　　　　　　　　// プロセス内で使用可能なVHOSTのポート番号(addコマンドで登録したvhostの番号)
+    "num_ring": 6,　　　　　　　　　　　　　 // プロセス内で使用可能なRINGの数(addコマンドで登録した数)
+    "ring": [ 0, 1, 2, 3, 4, 5 ],　　　　　　// プロセス内で使用可能なRINGのポート番号(addコマンドで登録したringの番号)
     "core": [
       {
-        "name": "classifier1",�@�@�@�@�@�@�@ // ���ʖ���
-        "core": 2,�@�@�@�@�@�@�@�@�@�@�@�@�@ // �R�A�ԍ�
-        "type": "classifier",�@�@�@�@�@�@�@�@// SPP�R���|�[�l���g
-        "status": "forward",�@�@�@�@�@�@�@�@ // �R�A�̏��(��~���^��]���^�]�������ԋp�����\��B)
-        "rx": [ "nic0" ],�@�@�@�@�@�@�@�@�@�@// ��M�|�[�g���
-        "tx": [ "ring0", "ring1", "ring2" ]�@// ���M�|�[�g���
+        "name": "classifier1",　　　　　　　 // 識別名称
+        "core": 2,　　　　　　　　　　　　　 // コア番号
+        "type": "classifier",　　　　　　　　// SPPコンポーネント
+        "status": "forward",　　　　　　　　 // コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "nic0" ],　　　　　　　　　　// 受信ポート情報
+        "tx": [ "ring0", "ring1", "ring2" ]　// 送信ポート情報
       },
       {
-        "name": "merge1",�@�@�@�@�@�@�@�@�@�@// ���ʖ���
-        "core": 4,�@�@�@�@�@�@�@�@�@�@�@�@�@ // �R�A�ԍ�
-        "type": "merge",�@�@�@�@�@�@�@�@�@�@ // SPP�R���|�[�l���g
-        "status": "idle",�@�@�@�@�@�@�@�@�@�@// �R�A�̏��(��~���^��]���^�]�������ԋp�����\��B)
-        "rx": [ "ring3", "ring4", "ring5" ], // ��M�|�[�g���
-        "tx": [ "nic0" ]�@�@�@�@�@�@�@�@�@�@ // ���M�|�[�g���
+        "name": "merge1",　　　　　　　　　　// 識別名称
+        "core": 4,　　　　　　　　　　　　　 // コア番号
+        "type": "merge",　　　　　　　　　　 // SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "ring3", "ring4", "ring5" ], // 受信ポート情報
+        "tx": [ "nic0" ]　　　　　　　　　　 // 送信ポート情報
       },
       {
-        "name": "forward1",�@�@�@�@�@�@�@�@�@// ���ʖ���
-        "core": 6,�@�@�@�@�@�@�@�@�@�@�@�@�@ // �R�A�ԍ�
-        "type": "forward",�@�@�@�@�@�@�@�@�@ // SPP�R���|�[�l���g
-        "status": "idle",�@�@�@�@�@�@�@�@�@�@// �R�A�̏��(��~���^��]���^�]�������ԋp�����\��B)
-        "rx": [ "ring0" ],�@�@�@�@�@�@�@�@�@ // ��M�|�[�g���
-        "tx": [ "vhost0" ]�@�@�@�@�@�@�@�@�@ // ���M�|�[�g���
+        "name": "forward1",　　　　　　　　　// 識別名称
+        "core": 6,　　　　　　　　　　　　　 // コア番号
+        "type": "forward",　　　　　　　　　 // SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [ "ring0" ],　　　　　　　　　 // 受信ポート情報
+        "tx": [ "vhost0" ]　　　　　　　　　 // 送信ポート情報
       },
       {
-        "name": "none",�@�@�@�@�@�@�@�@�@�@�@// ���ʖ���
-        "core": 8,�@�@�@�@�@�@�@�@�@�@�@�@�@ // �R�A�ԍ�
-        "type": "none",�@�@�@�@�@�@�@�@�@�@�@// SPP�R���|�[�l���g
-        "status": "idle",�@�@�@�@�@�@�@�@�@�@// �R�A�̏��(��~���^��]���^�]�������ԋp�����\��B)
-        "rx": [],�@�@�@�@�@�@�@�@�@�@�@�@�@�@// ��M�|�[�g���
-        "tx": []�@�@�@�@�@�@�@�@�@�@�@�@�@�@ // ���M�|�[�g���
+        "name": "none",　　　　　　　　　　　// 識別名称
+        "core": 8,　　　　　　　　　　　　　 // コア番号
+        "type": "none",　　　　　　　　　　　// SPPコンポーネント
+        "status": "idle",　　　　　　　　　　// コアの状態(停止中／空転中／転送中が返却される予定。)
+        "rx": [],　　　　　　　　　　　　　　// 受信ポート情報
+        "tx": []　　　　　　　　　　　　　　 // 送信ポート情報
       }
     ]
   }

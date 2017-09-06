@@ -1,20 +1,20 @@
 
-¡“®ìŽè‡ƒCƒ[ƒW
+â– å‹•ä½œæ‰‹é †ã‚¤ãƒ¡ãƒ¼ã‚¸
 
-¦ƒRƒ“ƒtƒBƒO–¼AƒRƒ}ƒ“ƒh–¼Aˆø”‚È‚Ç‚Í‰¼B
+â€»ã‚³ãƒ³ãƒ•ã‚£ã‚°åã€ã‚³ãƒžãƒ³ãƒ‰åã€å¼•æ•°ãªã©ã¯ä»®ã€‚
 
 
-œ1.ƒRƒ“ƒtƒBƒOƒtƒ@ƒCƒ‹‚ðvi‚È‚Ç‚Åƒ†[ƒU‚É‚Äì¬B
+â—1.ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’viãªã©ã§ãƒ¦ãƒ¼ã‚¶ã«ã¦ä½œæˆã€‚
 
 	$ vi /usr/local/etc/spp/vf.json
 
 
-œ2.spp.py‹N“®
+â—2.spp.pyèµ·å‹•
 
 	$ python /usr/local/bin/spp.py -p 5555 -s 6666
 
 
-œ3.ƒvƒ‰ƒCƒ}ƒŠ‹N“®
+â—3.ãƒ—ãƒ©ã‚¤ãƒžãƒªèµ·å‹•
 
 	$ sudo /usr/local/bin/spp_primary \
 	    -c 0x02 -n 4 \
@@ -27,12 +27,12 @@
 	    -s 192.168.122.1:5555
 
 
-œ4.ƒZƒJƒ“ƒ_ƒŠ‹N“®
+â—4.ã‚»ã‚«ãƒ³ãƒ€ãƒªèµ·å‹•
 	$ sudo /usr/local/bin/spp_vf \
 	    -c 0x06 -n 4 \
 	    --proc-type=secondary
 
 
-œ5.VM‹N“®(ƒRƒ}ƒ“ƒhƒCƒ[ƒWŠ„ˆ¤)
+â—5.VMèµ·å‹•(ã‚³ãƒžãƒ³ãƒ‰ã‚¤ãƒ¡ãƒ¼ã‚¸å‰²æ„›)
 
 

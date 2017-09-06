@@ -1,97 +1,97 @@
-���T�v
-�{�e�L�X�g�ł͉��L3�_�ɂ��Č����������ʂ��L�ڂ���B
-3�_�͐���@�\�ւ̒ǉ����s���B(�V�K�@�\����p�ӂ���ƁA����@�\����ړ����K�v�ƂȂ鏈�����K�v�ȈׁB)
+■概要
+本テキストでは下記3点について検討した結果を記載する。
+3点は制御機能への追加を行う。(新規機能部を用意すると、制御機能から移動が必要となる処理が必要な為。)
 
-(1)�R�}���h��t��̊Ǘ����̍X�V���@
-(2)SPP�R���|�[�l���g���Ǘ������擾����IF
-(3)�ʐ؂�ւ�(Sprint4�ł͏ȗ�)
+(1)コマンド受付後の管理情報の更新方法
+(2)SPPコンポーネントが管理情報を取得するIF
+(3)面切り替え(Sprint4では省略)
 
-�Ȃ��A��q���Ă���API�ɂ��ẮA
-���ꂼ��ʂɋL�ڂ��Ă��邪�A�K�v��API����ׂċL�ڂĂ��邾���ŁA
-���ɑ�����N���s�ƂȂ��Ă����ł͂Ȃ��B
+なお、後述しているAPIについては、
+それぞれ別に記載しているが、必要なAPIを並べて記載ているだけで、
+特に他から起動不可となっている訳ではない。
 
-���O��
-Sprint4�ł̌����ł́A�G���[���ł̐؂�߂��͍l�����Ȃ��B
-���ׁ̈A2�ʊǗ��͍s�킸�A�T�v�B�̖ʐ؂�ւ����s��Ȃ��B
-�܂��A�R�}���h��SPP�R���|�[�l���g��ŃG���[�ƂȂ����ꍇ�́A�G���[�̕ԋp�ׁ݂̂̈A�f�[�^���s�����̏�ԂƂȂ�\������B
+■前提
+Sprint4での検討では、エラー等での切り戻しは考慮しない。
+その為、2面管理は行わず、概要③の面切り替えも行わない。
+また、コマンドやSPPコンポーネント上でエラーとなった場合は、エラーの返却のみの為、データが不整合の状態となる可能性あり。
 
-�Ȃ��A�f�[�^�̏㏑���͋��e���Ȃ��B
-���ׁ̈A���Ɏg�p���̏�񂪂���΁A�G���[�ƂȂ�B
+なお、データの上書きは許容しない。
+その為、既に使用中の情報があれば、エラーとなる。
 
-MAC�A�h���X�ɂ��āA����}���`�L���X�g��u���[�h�L���X�g�̃A�h���X�̑Ή����s���Ă��Ȃ��ׁA
-�R�}���h�̃p�����[�^�Ƀ}���`�L���X�g�Ȃǂ̃A�h���X���ݒ肳��Ă��`�F�b�N�Ȃǂ͍s�킸�A���̂܂ܐݒ肷��B
-(Duplicate�̑Ή��ŁA�}���`�L���X�g�Ȃǂ�Ή�����ꍇ�ɍ��킹�ăK�[�h�����ɂ��Ă���������\��B)
+MACアドレスについて、現状マルチキャストやブロードキャストのアドレスの対応を行っていない為、
+コマンドのパラメータにマルチキャストなどのアドレスが設定されてもチェックなどは行わず、そのまま設定する。
+(Duplicateの対応で、マルチキャストなどを対応する場合に合わせてガード処理についても検討する予定。)
 
-���f�[�^
-����͊��ɑ��݂���R�A���(struct spp_core_info)��IF���(struct if_info)���g�p����\��B
-�f�[�^�̐������`�F�b�N���R���t�B�O����ǂݍ��݌�Ɏg�p���Ă���`�F�b�N�p�̊֐��𗬗p���č쐬�\��B
+■データ
+今回は既に存在するコア情報(struct spp_core_info)とIF情報(struct if_info)を使用する予定。
+データの整合性チェックもコンフィグから読み込み後に使用しているチェック用の関数を流用して作成予定。
 
-����L�\���͉̂��L�\�[�X�ɑ��݁B
-spp_vf.h�F31
+※上記構造体は下記ソースに存在。
+spp_vf.h：31
 struct spp_core_info {
 
-spp_vf.c�F39
+spp_vf.c：39
 struct if_info {
 
-�V�K�Ɉȉ��̃f�[�^��ǉ�����\��B
-�@MAC�A�h���X���(�n�b�V��)
-�@MAC�A�h���X����|�[�g��IF��ʂ�IF�ԍ����擾�\�ȃn�b�V�����쐬�B
-�@�R�}���h����Ǘ����փf�[�^��ݒ肷��ۂɁAMAC�A�h���X�̎g�p�L���̃`�F�b�N��A�ݒ肵�Ă���|�[�g�̏����擾����\��B
-�@�n�b�V���̏���́ARTE_MAX_ETHPORTS�̔{�̗\��B
+新規に以下のデータを追加する予定。
+①MACアドレス情報(ハッシュ)
+　MACアドレスからポートのIF種別とIF番号を取得可能なハッシュを作成。
+　コマンドから管理情報へデータを設定する際に、MACアドレスの使用有無のチェックや、設定しているポートの情報を取得する予定。
+　ハッシュの上限は、RTE_MAX_ETHPORTSの倍の予定。
 
-�AClassifier�̃f�[�^���(enum)
-�@mac�̂ݒl��p�ӁB
-�@�����mac�����Ȃ����A�p�����[�^�p�ɗp�ӁB
+②Classifierのデータ種別(enum)
+　macのみ値を用意。
+　現状はmacしかないが、パラメータ用に用意。
 
-��(1)�R�}���h���̊Ǘ����̍X�V���@
-�R�}���h�@�\�����R�}���h����M�����ꍇ�ɁA�R�}���h�̓��e���Ǘ����֐ݒ肷��ݒ�p��API��񋟂���B
-API�̓R�}���h���ɗp�ӂ��A�p�����[�^�̕ύX��R�}���h�̐V�K�ǉ������������ꍇ�ɁA���R�}���h�։e���������l�ɂ���B
-API�̒��ŃR�}���h�ł̐ݒ�Ɗ��ɂ���Ǘ����Ƃ̐��������`�F�b�N���A�`�F�b�N���ʂ͖߂�l�ŕԋp����B
-���������̃`�F�b�N�́A�Ⴆ�΁A�|�[�g�ł���΃|�[�g�ǉ�(add�R�}���h)�Ȃǂŏ����ݒ肪�������Ă��邩�H���Ŏg�p���łȂ����H�Ȃǂ̃`�F�b�N���s���B
+■(1)コマンド時の管理情報の更新方法
+コマンド機能部がコマンドを受信した場合に、コマンドの内容を管理情報へ設定する設定用のAPIを提供する。
+APIはコマンド毎に用意し、パラメータの変更やコマンドの新規追加等があった場合に、他コマンドへ影響が無い様にする。
+APIの中でコマンドでの設定と既にある管理情報との整合性をチェックし、チェック結果は戻り値で返却する。
+※整合性のチェックは、例えば、ポートであればポート追加(addコマンド)などで初期設定が完了しているか？他で使用中でないか？などのチェックを行う。
 
-�E�O��IF
-�@�v���Z�X�ԍ��擾(process)
-�߂�l�@�@�@�@�@�@�F�v���Z�X�ԍ�(0�`128) ���ő�l��CPU�̏�������z����128��z��B
-�N���p�����[�^�Őݒ肳�ꂽ�v���Z�X�ԍ���ԋp����B
+・外部IF
+①プロセス番号取得(process)
+戻り値　　　　　　：プロセス番号(0〜128) ※最大値はCPUの上限を見越して128を想定。
+起動パラメータで設定されたプロセス番号を返却する。
 
-�A�|�[�g�ǉ�(add)
-��Sprint4�ł͍쐬���Ȃ��\��B
+②ポート追加(add)
+※Sprint4では作成しない予定。
 
-�BSPP�R���|�[�l���g�ݒ�(component)
-��Sprint4�ł͍쐬���Ȃ��\��B
+③SPPコンポーネント設定(component)
+※Sprint4では作成しない予定。
 
-�CClassifier�e�[�u���ǉ�(classifier_table)
-�p�����[�^�P[IN  ]�F�f�[�^���(��ʒl) �����f�[�^�̐V�K�A��enum�̒l
-�p�����[�^�Q[IN  ]�F�f�[�^�l(������)
-�p�����[�^�R[IN  ]�F�|�[�g��IF��ʁ{IF�ԍ�(�\����struct spp_config_port_info)
-�߂�l�@�@�@�@�@�@�FOK(0)�^���̑�NG(-1)�^MAC�A�h���X�o�^�ς�(-2)�^MAC�A�h���X�o�^�Ȃ�(-3)�^�|�[�g�ݒ�Ȃ�(-4)�^�|�[�g�g�p��(-5)�E�E�E������Βǉ� ���߂�l�p��enum��p�ӂ���B
-�p�����[�^�P�̃f�[�^��ʂ͌���mac�������e���Ȃ��B
-�N�������ƁA�V�K�ɒǉ�����MAC�A�h���X���Ƀp�����[�^�Q��Key�E�p�����[�^�R��data�Ƃ����n�b�V���f�[�^��ǉ�����B
-�܂��A�p�����[�^�R�Ŏw�肳�ꂽ�|�[�g��IF����MAC�A�h���X��ǉ����AIF���ɃR�A��񂪑��݂���ꍇ�̓R�A���ւ�MAC�A�h���X��ǉ�����B
-(Sprint4�ł�2�ʊǗ����Ȃ��ׁA�g�p�ʂ֒��ڐݒ肷��B)
-�|�[�g��IF��ʂ�UNDEF��ݒ肵�ēn�����Ƃō폜����B
+④Classifierテーブル追加(classifier_table)
+パラメータ１[IN  ]：データ種別(種別値) ※■データの新規②のenumの値
+パラメータ２[IN  ]：データ値(文字列)
+パラメータ３[IN  ]：ポートのIF種別＋IF番号(構造体struct spp_config_port_info)
+戻り値　　　　　　：OK(0)／その他NG(-1)／MACアドレス登録済み(-2)／MACアドレス登録なし(-3)／ポート設定なし(-4)／ポート使用中(-5)・・・他あれば追加 ※戻り値用のenumを用意する。
+パラメータ１のデータ種別は現状macしか許容しない。
+起動されると、新規に追加したMACアドレス情報にパラメータ２をKey・パラメータ３をdataとしたハッシュデータを追加する。
+また、パラメータ３で指定されたポートのIF情報へMACアドレスを追加し、IF情報にコア情報が存在する場合はコア情報へもMACアドレスを追加する。
+(Sprint4では2面管理しない為、使用面へ直接設定する。)
+ポートのIF種別にUNDEFを設定して渡すことで削除する。
 
-���߂�l
-���̑�NG(-1)�@�@�@�@�@ �F���L�ȊO�̃G���[�B
-MAC�A�h���X�o�^�ς�(-2)�FMAC�A�h���X�ǉ����ɑΏۂ�MAC�A�h���X����B
-�|�[�g���ǉ�(-3)�@�@�@ �F�|�[�g�ǉ�(add)�����{���Ă��Ȃ��|�[�g�ւ̐ݒ�B
-�|�[�g�g�p��(-4)�@�@�@ �F����MAC�A�h���X�������|�[�g���g�p���B
+※戻り値
+その他NG(-1)　　　　　 ：下記以外のエラー。
+MACアドレス登録済み(-2)：MACアドレス追加時に対象のMACアドレスあり。
+ポート未追加(-3)　　　 ：ポート追加(add)を実施していないポートへの設定。
+ポート使用中(-4)　　　 ：他のMACアドレスが同じポートを使用中。
 
 
-�C�ݒ蔽�f(flush)
-�߂�l�@�@�@�@�@�@�FOK(0)�^NG(-1)
-�N������ƁA���̃R�}���h�ŋN�����ꂽAPI�ŕێ������R�A�������ɁA
-SPP�R���|�[�l���g����񋟂��ꂽ�X�V�p�֐����N������B
+④設定反映(flush)
+戻り値　　　　　　：OK(0)／NG(-1)
+起動すると、他のコマンドで起動されたAPIで保持したコア情報を元に、
+SPPコンポーネントから提供された更新用関数を起動する。
 
-�D�]���J�n(forward)
-��Sprint4�ł͍쐬���Ȃ��\��B
+⑤転送開始(forward)
+※Sprint4では作成しない予定。
 
-�E�]����~(stop)
-��Sprint4�ł͍쐬���Ȃ��\��B
+⑥転送停止(stop)
+※Sprint4では作成しない予定。
 
-��(2)SPP�R���|�[�l���g���Ǘ���񂩂�f�[�^���擾������@
-SPP�R���|�[�l���g�ւ̍X�V�͊e�R���|�[�l���g������X�V�p�֐���񋟂��Ă��炤���ɂȂ����ׁAAPI�̒񋟂͍s��Ȃ��B
-SPP�R���|�[�l���g����񋟂����X�V�p�֐��Ɋ֘A����d�l�́A�u#404_�R���|�[�l���g���݌v.txt�v���Q�ƁB
+■(2)SPPコンポーネントが管理情報からデータを取得する方法
+SPPコンポーネントへの更新は各コンポーネント側から更新用関数を提供してもらう事になった為、APIの提供は行わない。
+SPPコンポーネントから提供される更新用関数に関連する仕様は、「#404_コンポーネント側設計.txt」を参照。
 
-��(3)�ʐ؂�ւ�
-Sprint4�ł͐؂�߂����l�����Ȃ��ׁA2�ʊǗ����s��Ȃ��ׁA�ʐ؂�ւ��͍s��Ȃ��B
+■(3)面切り替え
+Sprint4では切り戻しを考慮しない為、2面管理を行わない為、面切り替えは行わない。

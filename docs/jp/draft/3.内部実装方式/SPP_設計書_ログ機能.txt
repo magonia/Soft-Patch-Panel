@@ -1,121 +1,121 @@
-���ړI
+■目的
 
-	* �X���b�h�ԃL���[�iring�j�̑ؗ���𑪒�o����悤�ɂ���B
-		nic�^vhost�͑ΏۊO�B
-
-
-���Q�l
-
-	* dpdk�glibrte_latencystats�h
-		�K�C�h�F http://dpdk.org/doc/guides/prog_guide/metrics_lib.html#latency-statistics-library
-		�\�[�X�F dpdk-17.05\lib\librte_latencystats
+	* スレッド間キュー（ring）の滞留具合を測定出来るようにする。
+		nic／vhostは対象外。
 
 
-���T�v
+■参考
 
-	* �L���[�ݗ����Ԃ̌v�Z
+	* dpdk“librte_latencystats”
+		ガイド： http://dpdk.org/doc/guides/prog_guide/metrics_lib.html#latency-statistics-library
+		ソース： dpdk-17.05\lib\librte_latencystats
 
-		ring�ւ̏������ݎ���mbuf::timestamp��rte_get_tsc_cycles�֐��Ŏ擾����tsc�l��ݒ肵�A
-		ring����̓ǂݍ��ݎ��ɂ��̒l�ƌ��݂�tsc�l�Ƃ̍������ݗ����ԂƂ���B
 
-	* �L���[�ݗ����Ԃ̓��v�̕ێ�
+■概要
 
-		�ݗ����Ԃ�͈͂ŕ����J�E���g����B
-		�J�E���^�̓O���[�o���ϐ��ŕێ��B		���O���[�o���ϐ��͕K���������Q�Ƃ���������H�H�H
-�@
-			0 ns				��tsc�l�̐��x�������ƑS��0�ɂȂ�ꍇ���l������B
-			�`				��1ns����
+	* キュー在留時間の計算
+
+		ringへの書き込み時にmbuf::timestampにrte_get_tsc_cycles関数で取得したtsc値を設定し、
+		ringからの読み込み時にその値と現在のtsc値との差分を在留時間とする。
+
+	* キュー在留時間の統計の保持
+
+		在留時間を範囲で分けカウントする。
+		カウンタはグローバル変数で保持。		★グローバル変数は必ずメモリ参照が発生する？？？
+　
+			0 ns				※tsc値の精度が悪いと全て0になる場合も考えられる。
+			〜				※1ns刻み
 			99ns			
-			100ns�ȏ�
+			100ns以上
 
-		84byte�p�P�b�g��10Gbps��1�X���b�h�Ŏ�������ꍇ�A
-		1�p�P�b�g������̏������Ԃ�67.2ns�ł���A
-		84byte�p�P�b�g��40Gbps��1�X���b�h�Ŏ�������ꍇ�A
-		1�p�P�b�g������̏������Ԃ�16.8ns�̂��߁A
-		��L�͈͂̓��v�����΍ݗ����Ԃ����e�ł��邩���f�ł��邩�ƍl���܂��B
+		84byteパケットで10Gbpsを1スレッドで実現する場合、
+		1パケットあたりの処理時間は67.2nsであり、
+		84byteパケットで40Gbpsを1スレッドで実現する場合、
+		1パケットあたりの処理時間は16.8nsのため、
+		上記範囲の統計を取れば在留時間が許容できるか判断できるかと考えます。
 
-	* �L���[�ݗ����Ԃ̓��v�̕\��
+	* キュー在留時間の統計の表示
 
-		���j�^�����O�X���b�h��ʓr�N�����A�������ŕW���o�֑͂O�q�̃J�E���g��\���B
-		�\����ring���ɔ���悤�ɂ���B
+		モニタリングスレッドを別途起動し、一定周期で標準出力へ前述のカウントを表示。
+		表示はring毎に判るようにする。
 
-		�X�v�����g1�ł̓��C���X���b�h�ŏo��
+		スプリント1ではメインスレッドで出力
 
-	* �T���v�����O�Ԋu�̐ݒ�
+	* サンプリング間隔の設定
 
-		�S�Ă�mbuf�ɑ΂��đO�q�̏��������s����ƃp�t�H�[�}���X�򉻂̉\�����������߁A
-		�Ώ�mbuf�͌��肷��B
+		全てのmbufに対して前述の処理を実行するとパフォーマンス劣化の可能性が高いため、
+		対象mbufは限定する。
 
-		��{�I��mbuf�����̓o���N�Ŏ��{�����ƍl����B
-		�O��o���N��������T���v�����O�Ԋu�ȏ�o�߂��Ă����ꍇ�A
-		���Y�o���N������mbuf�ɑ΂��đ��菈�����s���B
-		�T���v�����O�Ԋu�����̏ꍇ��mbuf::timestamp�ւ̐ݒ菈���͍s��Ȃ��B
+		基本的にmbuf処理はバルクで実施されると考える。
+		前回バルク処理からサンプリング間隔以上経過していた場合、
+		当該バルク処理のmbufに対して測定処理を行う。
+		サンプリング間隔未満の場合はmbuf::timestampへの設定処理は行わない。
 
-	* �����}�~
+	* 処理抑止
 
-		�{�@�\�p��ifdef�X�C�b�`��p�ӂ��A
-		OFF�ɂ������ꍇ�̓R���p�C�����ɉ����s��Ȃ������ɂȂ�悤�ɂ���B
+		本機能用のifdefスイッチを用意し、
+		OFFにしたい場合はコンパイル時に何も行わない処理になるようにする。
 
-	* mbuf��timestamp�ɂ���
+	* mbufのtimestampについて
 
-		dpdk-17.05�̃\�[�X��grep���A
-		mbuf::timestamp����ꕨ�Ƃ��Ďg�p���Ă���̂́glibrte_latencystats�h�݂̂Ɗm�F�B
-		�i".timestamp"�A"->timestamp"�Ō����j
+		dpdk-17.05のソースをgrepし、
+		mbuf::timestampを入れ物として使用しているのは“librte_latencystats”のみと確認。
+		（".timestamp"、"->timestamp"で検索）
 
 
-���O�����
+■前提条件
 
-	* librte_latencystats���g�p���Ȃ��B
+	* librte_latencystatsを使用しない。
 
-		mbuf�̎g�p�̈悪�������邽�߁B
+		mbufの使用領域が競合するため。
 
-		librte_latencystats��eth�f�o�C�X�p�̒x�����v��񃉃C�u�����̂��ߍ���͕s�g�p�B
-			ibrte_latencystats��eth�f�o�C�X�p�Ƃ��������́A
-			rte_eth_dev_info_get�Ŏ擾�������̂ɑ΂��ď������s���Ă��邽�߁B
+		librte_latencystatsはethデバイス用の遅延統計情報ライブラリのため今回は不使用。
+			ibrte_latencystatsはethデバイス用という根拠は、
+			rte_eth_dev_info_getで取得したものに対して処理を行っているため。
 
-	* CPU���gInvariant TSC�h��������Ă��邱�ƁB
+	* CPUが“Invariant TSC”を具備していること。
 
-		Invariant TSC��������Ă��Ȃ��ꍇ�Atsc�l�̓R�A���ɑ����Ȃ�Ƃ��قȂ�B
-		���J����ring�ւ̏������݁^�ǂݍ��݂͕ʃX���b�h���ʃR�A�̂��߁A
-		Invariant TSC�ɑΉ����Ă��Ȃ�CPU�ł͍ݗ����Ԃ��������v�Z�ł��Ȃ��B
+		Invariant TSCを具備していない場合、tsc値はコア毎に多少なりとも異なる。
+		今開発のringへの書き込み／読み込みは別スレッド＝別コアのため、
+		Invariant TSCに対応していないCPUでは在留時間が正しく計算できない。
 
-		�������AInvariant TSC�͒�i�ō��܂�邽�߁A�ő�N���b�N�Ƃ͌���Ȃ��B
+		ただし、Invariant TSCは定格で刻まれるため、最大クロックとは限らない。
 
-		�Q�l
+		参考
 			http://www.02.246.ne.jp/~torutk/cxx/clock/cpucounter.html
 			http://d.hatena.ne.jp/torutk/20120922/p1
 			http://www.valinux.co.jp/technologylibrary/document/linuxkernel/timer0003/
 
 
-���O���֐��C���[�W
+■外部関数イメージ
 
-	* ������
+	* 初期化
 
-		�v���Z�X�J�n���ɌĂ΂��z��B
+		プロセス開始時に呼ばれる想定。
 
-		���v���Z�X�g�p��ring���������v�J�E���g���쐬���A����������B
+		自プロセス使用のring分だけ統計カウントを作成し、初期化する。
 
-	* timestamp�ݒ�
+	* timestamp設定
 
-		ring�ւ̏������ݎ��ɌĂ΂��z��B
+		ringへの書き込み時に呼ばれる想定。
 
-		��������mbuf�̃��X�g�������ɂƂ�B
+		書き込むmbufのリストを引数にとる。
 
-		�T���v�����O�Ԋu���v�Z���A�O�񂩂�T���v�����O�Ԋu�ȏ�o�߂��Ă����
-		�����œn���ꂽ�embuf��timetamp��tsc�l��ݒ肷��B
-		�T���v�����O�Ԋu�����ł���Ή������Ȃ��B
+		サンプリング間隔を計算し、前回からサンプリング間隔以上経過していれば
+		引数で渡された各mbufのtimetampにtsc値を設定する。
+		サンプリング間隔未満であれば何もしない。
 
-	* ���v���v�Z
+	* 統計情報計算
 
-		ring����̓ǂݎ�莞�ɌĂ΂��z��B
+		ringからの読み取り時に呼ばれる想定。
 
-		�ǂݎ��ꂽmbuf�̃��X�g�������ɂƂ�B
+		読み取られたmbufのリストを引数にとる。
 
-		mbuf::timestamp���m�F���A0�łȂ����tsc�l���ݒ肳��Ă��锻�f���A
-		�������v�Z�A�v���J�E���g�����肵�J�E���g����B
+		mbuf::timestampを確認し、0でなければtsc値が設定されている判断し、
+		差分を計算、計上先カウントを決定しカウントする。
 
-	* ���v���擾
+	* 統計情報取得
 
-		���j�^�����O�X���b�h����Ă΂��z��B
+		モニタリングスレッドから呼ばれる想定。
 
-		���v����Ԃ��B
+		統計情報を返す。

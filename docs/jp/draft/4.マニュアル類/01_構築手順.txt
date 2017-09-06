@@ -1,73 +1,73 @@
 
 ================================================================================
-¡ƒ}ƒVƒ“\¬
+â– ãƒã‚·ãƒ³æ§‹æˆ
 ================================================================================
 
-SPP-HOSTƒ}ƒVƒ“ F SPP‚ğÀs‚µASPP‚ÆÚ‘±‚·‚éVM‚ğ‹N“®‚·‚éƒ}ƒVƒ“B
-SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
-‘ÎŒüƒ}ƒVƒ“     F SPP-VM‚ÆƒpƒPƒbƒg‘—óM‚·‚éASPP-HOSTƒ}ƒVƒ“‚ÆˆÙ‚È‚éŠO•”ƒ}ƒVƒ“B
+SPP-HOSTãƒã‚·ãƒ³ ï¼š SPPã‚’å®Ÿè¡Œã—ã€SPPã¨æ¥ç¶šã™ã‚‹VMã‚’èµ·å‹•ã™ã‚‹ãƒã‚·ãƒ³ã€‚
+SPP-VMãƒã‚·ãƒ³   ï¼š SPP-HOSTãƒã‚·ãƒ³ä¸Šã§èµ·å‹•ã•ã‚Œã‚‹SPPã¨æ¥ç¶šã™ã‚‹VMã€‚
+å¯¾å‘ãƒã‚·ãƒ³     ï¼š SPP-VMã¨ãƒ‘ã‚±ãƒƒãƒˆé€å—ä¿¡ã™ã‚‹ã€SPP-HOSTãƒã‚·ãƒ³ã¨ç•°ãªã‚‹å¤–éƒ¨ãƒã‚·ãƒ³ã€‚
 
 
 ================================================================================
-¡‘O’ñ
+â– å‰æ
 ================================================================================
 
-E–{è‡‚ÍUbuntu16.04‚ÅÀ{B
-Ekvm/qemuƒCƒ“ƒXƒg[ƒ‹Ï‚İB
-E“®ìŠm”Fqemuƒo[ƒWƒ‡ƒ“‚Íg2.3.0(ivshmem‘Î‰ƒo[ƒWƒ‡ƒ“)hB
+ãƒ»æœ¬æ‰‹é †ã¯Ubuntu16.04ã§å®Ÿæ–½ã€‚
+ãƒ»kvm/qemuã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã€‚
+ãƒ»å‹•ä½œç¢ºèªqemuãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¯â€œ2.3.0(ivshmemå¯¾å¿œãƒãƒ¼ã‚¸ãƒ§ãƒ³)â€ã€‚
 		https://github.com/garogers01/soft-patch-panel/tree/master/qemu-2.3.0
-ESPP-VM‚ÌVM©‘Ì‚Ìì¬‚Í’Êí‚Ìè‡‚ÅÀ{B
+ãƒ»SPP-VMã®VMè‡ªä½“ã®ä½œæˆã¯é€šå¸¸ã®æ‰‹é †ã§å®Ÿæ–½ã€‚
 
 
 ================================================================================
-¡hugepageİ’è —SPP-HOSTƒ}ƒVƒ“
+â– hugepageè¨­å®š ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-›qemu‚ÌÀsŒ ‚ğroot‚É•ÏX
+â—‹qemuã®å®Ÿè¡Œæ¨©ã‚’rootã«å¤‰æ›´
 
 	$ sudo vi /etc/libvirt/qemu.conf
 
 		#user = "root"
-		«
+		â†“
 		user = "root"
 
 		#group = "root"
-		«
+		â†“
 		group = "root"
 
 
-›KVM‚Ìhugepageİ’è
+â—‹KVMã®hugepageè¨­å®š
 
 	$ sudo vi /etc/default/qemu-kvm
 
 		KVM_HUGEPAGES=0
-		«
+		â†“
 		KVM_HUGEPAGES=1
 
 
-›ƒfƒtƒHƒ‹ƒg‚ÌhugepageƒTƒCƒY‚Æisolcpus‚Ìİ’è(İ’è’l‚Í•K—v‚É‰‚¶‚Ä•ÏX‚·‚é)
+â—‹ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®hugepageã‚µã‚¤ã‚ºã¨isolcpusã®è¨­å®š(è¨­å®šå€¤ã¯å¿…è¦ã«å¿œã˜ã¦å¤‰æ›´ã™ã‚‹)
 
 	$ sudo vi /etc/default/grub
 
 		GRUB_CMDLINE_LINUX_DEFAULT="isolcpus=2,4,6,8,10,12-18,20,22,24,26-42,44,46 hugepagesz=1G hugepages=36 default_hugepagesz=1G"
 
 
-›grub‚ÌXV‚ÆÄ‹N“®
+â—‹grubã®æ›´æ–°ã¨å†èµ·å‹•
 
 	$ sudo update-grub
 	$ sudo reboot
 
 
-›hugepageó‘Ô‚ÌŠm”F
+â—‹hugepageçŠ¶æ…‹ã®ç¢ºèª
 
 	$ cat /proc/meminfo | grep -i huge
 
 		AnonHugePages:      2048 kB
-		HugePages_Total:      36		©	/etc/default/grub‚Åw’è‚µ‚½’l
+		HugePages_Total:      36		â†	/etc/default/grubã§æŒ‡å®šã—ãŸå€¤
 		HugePages_Free:       36
 		HugePages_Rsvd:        0
 		HugePages_Surp:        0
-		Hugepagesize:    1048576 kB		©	/etc/default/grub‚Åw’è‚µ‚½’l
+		Hugepagesize:    1048576 kB		â†	/etc/default/grubã§æŒ‡å®šã—ãŸå€¤
 
 	$ mount | grep -i huge
 
@@ -77,38 +77,38 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 		hugetlb on /run/lxcfs/controllers/hugetlb type cgroup (rw,relatime,hugetlb,release_agent=/run/cgmanager/agents/cgm-release-agent.hugetlb,nsroot=/)
 
 
-›ƒfƒtƒHƒ‹ƒg‚Ìhugepage(–¢g—p)‚ğƒAƒ“ƒ}ƒEƒ“ƒg
+â—‹ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®hugepage(æœªä½¿ç”¨)ã‚’ã‚¢ãƒ³ãƒã‚¦ãƒ³ãƒˆ
 
 	$ sudo umount /dev/hugepages
 
 
 ================================================================================
-¡janssonƒCƒ“ƒXƒg[ƒ‹ —SPP-HOSTƒ}ƒVƒ“
+â– janssonã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ« ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-¦janssonFCŒ¾Œê‚ÌJSONƒ‰ƒCƒuƒ‰ƒŠB
+â€»janssonï¼šCè¨€èªã®JSONãƒ©ã‚¤ãƒ–ãƒ©ãƒªã€‚
 
-¦–{è‡‚ÍAƒCƒ“ƒ^[ƒlƒbƒgÚ‘±‰Â”\‚ÈŠÂ‹«‚É‚ÄÀ{‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
-  janssonƒtƒ@ƒCƒ‹‚ğ“üè‚µjson_path‚ğ“K—pŒãASPP-HOST‚Ö”z’u‚µ‚Ü‚·
+â€»æœ¬æ‰‹é †ã¯ã€ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒƒãƒˆæ¥ç¶šå¯èƒ½ãªç’°å¢ƒã«ã¦å®Ÿæ–½ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
+  janssonãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…¥æ‰‹ã—json_pathã‚’é©ç”¨å¾Œã€SPP-HOSTã¸é…ç½®ã—ã¾ã™
 
-¦ƒvƒƒLƒVİ’è‚ª•K—v‚ÈŠÂ‹«‚Ìê‡‚ÍˆÈ‰º‚ğÀ{
-›ƒvƒƒLƒVİ’è
+â€»ãƒ—ãƒ­ã‚­ã‚·è¨­å®šãŒå¿…è¦ãªç’°å¢ƒã®å ´åˆã¯ä»¥ä¸‹ã‚’å®Ÿæ–½
+â—‹ãƒ—ãƒ­ã‚­ã‚·è¨­å®š
 
-	¦http://202.213.220.102:80‚ÍŠÂ‹«‚É‡‚í‚¹•ÏX‚·‚é
+	â€»http://202.213.220.102:80ã¯ç’°å¢ƒã«åˆã‚ã›å¤‰æ›´ã™ã‚‹
 
 	$ git config --global http.proxy http://202.213.220.102:80
 
-	İ’è“à—e‚ÌŠm”F
+	è¨­å®šå†…å®¹ã®ç¢ºèª
 	$ cat .gitconfig
-	  proxy=İ’è‚µ‚½ƒvƒƒLƒV“à—e‚Æ‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ğŠm”F
+	  proxy=è¨­å®šã—ãŸãƒ—ãƒ­ã‚­ã‚·å†…å®¹ã¨ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèª
 
 
-›jansson‚Ì“üè
+â—‹janssonã®å…¥æ‰‹
 
 	$ sudo git clone https://github.com/rogerz/jansson
 
 
-›json_pathƒpƒbƒ`‚Ì“K—p
+â—‹json_pathãƒ‘ãƒƒãƒã®é©ç”¨
 
 	$ cd jansson
 	$ sudo git checkout json_path
@@ -116,13 +116,13 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 	Switched to a new branch 'json_path'
 
 
-›janssonˆê®‚ğˆÚ“®
+â—‹janssonä¸€å¼ã‚’ç§»å‹•
 
 	$ sudo mkdir -p /opt/jansson
 	$ sudo mv jansson /opt/jansson
 
 
-›jansson‚ÌƒCƒ“ƒXƒg[ƒ‹
+â—‹janssonã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
 
 	$ cd /opt/jansson/jansson
 	$ sudo autoreconf -i
@@ -141,102 +141,102 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 
 
 ================================================================================
-¡DPDKƒCƒ“ƒXƒg[ƒ‹ —SPP-HOSTƒ}ƒVƒ“
+â– DPDKã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ« ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-›dpdk-17.05‚ğƒCƒ“ƒXƒg[ƒ‹B
+â—‹dpdk-17.05ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã€‚
 
-	$ cd DPDKƒCƒ“ƒXƒg[ƒ‹ƒfƒBƒŒƒNƒgƒŠiex. /home/hoge/dpdk-17.05j
+	$ cd DPDKã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆex. /home/hoge/dpdk-17.05ï¼‰
 	$ export RTE_SDK=`pwd`
 	$ export RTE_TARGET=x86_64-native-linuxapp-gcc
 	$ make T=x86_64-native-linuxapp-gcc install
 
-	¦DPDK‚ğ\’z‚·‚éã‚Å•K—v‚ÈƒpƒbƒP[ƒW‚É‚Â‚¢‚Ä‚ÍDPDKŒö®ƒhƒLƒ…ƒƒ“ƒg‚ğQÆB
+	â€»DPDKã‚’æ§‹ç¯‰ã™ã‚‹ä¸Šã§å¿…è¦ãªãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã«ã¤ã„ã¦ã¯DPDKå…¬å¼ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚’å‚ç…§ã€‚
 
 
-ˆÈ~A‰º‹LŠÂ‹«•Ï”‚ªİ’è‚³‚ê‚Ä‚¢‚é‚Æ‚µ‚Ü‚·B
+ä»¥é™ã€ä¸‹è¨˜ç’°å¢ƒå¤‰æ•°ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã¨ã—ã¾ã™ã€‚
 
-	export RTE_SDK=DPDKƒCƒ“ƒXƒg[ƒ‹ƒfƒBƒŒƒNƒgƒŠiex. /home/hoge/dpdk-17.05j
+	export RTE_SDK=DPDKã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆex. /home/hoge/dpdk-17.05ï¼‰
 
 
 ================================================================================
-¡SPPƒrƒ‹ƒh —SPP-HOSTƒ}ƒVƒ“
+â– SPPãƒ“ãƒ«ãƒ‰ ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-›SPP-VF‚Ìƒ\[ƒXˆê®‚ğæ“¾
+â—‹SPP-VFã®ã‚½ãƒ¼ã‚¹ä¸€å¼ã‚’å–å¾—
 
 	$ git clone https://github.com/ntt-ns/Soft-Patch-Panel.git
-		¦URL‚Í2017/07/04“_
+		â€»URLã¯2017/07/04æ™‚ç‚¹
 
-ˆÈ~A‰º‹LŠÂ‹«•Ï”‚ªİ’è‚³‚ê‚Ä‚¢‚é‚Æ‚µ‚Ü‚·B
+ä»¥é™ã€ä¸‹è¨˜ç’°å¢ƒå¤‰æ•°ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã¨ã—ã¾ã™ã€‚
 
-	export SPP_HOME=SPPƒCƒ“ƒXƒg[ƒ‹ƒfƒBƒŒƒNƒgƒŠiex. /home/hoge/spp-17.05j
+	export SPP_HOME=SPPã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆex. /home/hoge/spp-17.05ï¼‰
 
 
-›SPPƒrƒ‹ƒh
+â—‹SPPãƒ“ãƒ«ãƒ‰
 
 	$ cd $SPP_HOME
 	$ make
 
 
 ================================================================================
-¡DPDKƒoƒCƒ“ƒh —SPP-HOSTƒ}ƒVƒ“
+â– DPDKãƒã‚¤ãƒ³ãƒ‰ ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-›uioƒ‚ƒWƒ…[ƒ‹‚Ìƒ[ƒh
+â—‹uioãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã®ãƒ­ãƒ¼ãƒ‰
 
 	$ sudo modprobe uio
 	$ sudo insmod $RTE_SDK/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
 	$ lsmod | grep uio
 
-		igb_uio                16384  0				© igb_uio‚ªƒ[ƒh‚³‚ê‚Ä‚¢‚é
+		igb_uio                16384  0				â† igb_uioãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ã‚‹
 		uio                    20480  1 igb_uio
 
 
-›DPDKƒoƒCƒ“ƒh
+â—‹DPDKãƒã‚¤ãƒ³ãƒ‰
 
-	¦w’è‚·‚éPCI”Ô†‚ÍŠÂ‹«‚É‡‚í‚¹w’è‚·‚é
-	$ sudo $RTE_SDK/usertools/dpdk-devbind.py --bind=igb_uio PCI”Ô†
+	â€»æŒ‡å®šã™ã‚‹PCIç•ªå·ã¯ç’°å¢ƒã«åˆã‚ã›æŒ‡å®šã™ã‚‹
+	$ sudo $RTE_SDK/usertools/dpdk-devbind.py --bind=igb_uio PCIç•ªå·
 
-ƒTƒ“ƒvƒ‹İ’è‚Å‚ÍSPP-VF‚Í•¨—NIC‚ğ2‚Âg—p‚·‚é‚½‚ßA2NIC‚ÌƒoƒCƒ“ƒh‚ª•K—vB
+ã‚µãƒ³ãƒ—ãƒ«è¨­å®šã§ã¯SPP-VFã¯ç‰©ç†NICã‚’2ã¤ä½¿ç”¨ã™ã‚‹ãŸã‚ã€2NICã®ãƒã‚¤ãƒ³ãƒ‰ãŒå¿…è¦ã€‚
 
 
 ================================================================================
-¡SPP-VM‚ÉVHOST‚Ìİ’è‚ğ’Ç‰Á —SPP-HOSTƒ}ƒVƒ“
+â– SPP-VMã«VHOSTã®è¨­å®šã‚’è¿½åŠ  ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-	$ virsh edit SPP-VM–¼
+	$ virsh edit SPP-VMå
 
 	<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
 
-	`È—ª`
+	ã€œçœç•¥ã€œ
 
 	  <memoryBacking>
 	     <hugepages/>
 	  </memoryBacking>
 
-	`È—ª`
+	ã€œçœç•¥ã€œ
 
 	 <type arch='x86_64' machine='pc-i440fx-2.3'>hvm</type>
 
-	`È—ª`
+	ã€œçœç•¥ã€œ
 
 	 <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
 
-	`È—ª`
+	ã€œçœç•¥ã€œ
 
 	  <qemu:commandline>
 	    <qemu:arg value='-cpu'/>
 	    <qemu:arg value='host'/>
 
-	¦‹¤’Ê
+	â€»å…±é€š
 	    <qemu:arg value='-object'/>
 	    <qemu:arg value='memory-backend-file,id=mem,size=4096M,mem-path=/run/hugepages/kvm,share=on'/>
 	    <qemu:arg value='-numa'/>
 	    <qemu:arg value='node,memdev=mem'/>
 	    <qemu:arg value='-mem-prealloc'/>
 
-	¦—ájVHOST0—p
+	â€»ä¾‹ï¼‰VHOST0ç”¨
 	    <qemu:arg value='-chardev'/>
 	    <qemu:arg value='socket,id=chr0,path=/tmp/sock0'/>
 	    <qemu:arg value='-device'/>
@@ -244,7 +244,7 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 	    <qemu:arg value='-netdev'/>
 	    <qemu:arg value='vhost-user,id=vhost-net0,chardev=chr0,vhostforce'/>
 
-	¦—ájVHOST1—p
+	â€»ä¾‹ï¼‰VHOST1ç”¨
 	    <qemu:arg value='-chardev'/>
 	    <qemu:arg value='socket,id=chr1,path=/tmp/sock1'/>
 	    <qemu:arg value='-device'/>
@@ -252,13 +252,13 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 	    <qemu:arg value='-netdev'/>
 	    <qemu:arg value='vhost-user,id=vhost-net1,chardev=chr1,vhostforce'/>
 
-	¦ã‹L‚ÌVHOST—p‚Ìİ’è‚Ì5‚©Š‚Ì”š‚ÍAÚ‘±‚·‚éVHOST‚Ì”Ô†‚Æ‡‚í‚¹‚éB
-	¦VHOST‚Ì”Ô†‚Íg—pè‡‚É‹LÚ‚Ìspp.json‚Æ‡‚í‚¹‚éB
+	â€»ä¸Šè¨˜ã®VHOSTç”¨ã®è¨­å®šã®5ã‹æ‰€ã®æ•°å­—ã¯ã€æ¥ç¶šã™ã‚‹VHOSTã®ç•ªå·ã¨åˆã‚ã›ã‚‹ã€‚
+	â€»VHOSTã®ç•ªå·ã¯ä½¿ç”¨æ‰‹é †ã«è¨˜è¼‰ã®spp.jsonã¨åˆã‚ã›ã‚‹ã€‚
 
 	  </qemu:commandline>
 
 
-QlFŒ±g—pVM‚Ìİ’èXML
+å‚è€ƒï¼šè©¦é¨“ä½¿ç”¨VMã®è¨­å®šXML
 
 	<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
 	  <name>spp-vm1</name>
@@ -344,12 +344,12 @@ SPP-VMƒ}ƒVƒ“   F SPP-HOSTƒ}ƒVƒ“ã‚Å‹N“®‚³‚ê‚éSPP‚ÆÚ‘±‚·‚éVMB
 
 
 ================================================================================
-¡ƒgƒ‰ƒuƒ‹ƒVƒ…[ƒeƒBƒ“ƒOFVM‚ª‹N“®‚µ‚È‚¢ê‡iUbuntuj —SPP-HOSTƒ}ƒVƒ“
+â– ãƒˆãƒ©ãƒ–ãƒ«ã‚·ãƒ¥ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ï¼šVMãŒèµ·å‹•ã—ãªã„å ´åˆï¼ˆUbuntuï¼‰ ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-appamor‚É‚æ‚èA
-/tmp/sockXƒtƒ@ƒCƒ‹‚Ìƒp[ƒ~ƒbƒVƒ‡ƒ“ƒGƒ‰[‚ª”­¶‚·‚éê‡‚ª‚ ‚è‚Ü‚·B
-”­¶‚ÍˆÈ‰º‚ğs‚­‚¾‚³‚¢B
+appamorã«ã‚ˆã‚Šã€
+/tmp/sockXãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ãƒŸãƒƒã‚·ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹å ´åˆãŒã‚ã‚Šã¾ã™ã€‚
+ç™ºç”Ÿæ™‚ã¯ä»¥ä¸‹ã‚’è©¦è¡Œãã ã•ã„ã€‚
 
 	$ sudo ln -s /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper /etc/apparmor.d/disable/usr.lib.libvirt.virt-aa-helper
 	$ sudo ln -s /etc/apparmor.d/usr.sbin.libvirtd /etc/apparmor.d/disable/usr.sbin.libvirtd
@@ -359,28 +359,28 @@ appamor‚É‚æ‚èA
 	$ sudo service apparmor restart
 	$ sudo service libvirt-bin restart 
 
-ã‹L‚ğs‚µ‚Ä‚à‰ğŒˆ‚³‚ê‚È‚¢ê‡Aappamor©‘Ì‚Ìíœ‚à‚¨‚µ‚­‚¾‚³‚¢B
+ä¸Šè¨˜ã‚’è©¦è¡Œã—ã¦ã‚‚è§£æ±ºã•ã‚Œãªã„å ´åˆã€appamorè‡ªä½“ã®å‰Šé™¤ã‚‚ãŠè©¦ã—ãã ã•ã„ã€‚
 
 	$ sudo apt-get remove apparmor
 
 
 ================================================================================
-¡ƒgƒ‰ƒuƒ‹ƒVƒ…[ƒeƒBƒ“ƒOFVM‚ª‹N“®‚µ‚È‚¢ê‡iCentOSj —SPP-HOSTƒ}ƒVƒ“
+â– ãƒˆãƒ©ãƒ–ãƒ«ã‚·ãƒ¥ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ï¼šVMãŒèµ·å‹•ã—ãªã„å ´åˆï¼ˆCentOSï¼‰ ï¼ SPP-HOSTãƒã‚·ãƒ³
 ================================================================================
 
-SELinux‚É‚æ‚èA
-/tmp/sockXƒtƒ@ƒCƒ‹‚Ìƒp[ƒ~ƒbƒVƒ‡ƒ“ƒGƒ‰[‚ª”­¶‚·‚éê‡‚ª‚ ‚è‚Ü‚·B
-”­¶‚ÍˆÈ‰º‚ğs‚­‚¾‚³‚¢B
+SELinuxã«ã‚ˆã‚Šã€
+/tmp/sockXãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ãƒŸãƒƒã‚·ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹å ´åˆãŒã‚ã‚Šã¾ã™ã€‚
+ç™ºç”Ÿæ™‚ã¯ä»¥ä¸‹ã‚’è©¦è¡Œãã ã•ã„ã€‚
 
 	$ sudo vi /etc/selinux/config
 
 		SELINUX=enforcing
-			«
+			â†“
 		SELINUX=disabled
 
-•Û‘¶Œãƒ}ƒVƒ“Ä‹N“®BˆÈ‰ºƒRƒ}ƒ“ƒh‚Å–³Œø‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ğŠm”FB
+ä¿å­˜å¾Œãƒã‚·ãƒ³å†èµ·å‹•ã€‚ä»¥ä¸‹ã‚³ãƒãƒ³ãƒ‰ã§ç„¡åŠ¹ã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã€‚
 
 	$ getenforce
 
-		Disabled	© –³Œø‚É‚È‚Á‚Ä‚¢‚é‚±‚ÆB
+		Disabled	â† ç„¡åŠ¹ã«ãªã£ã¦ã„ã‚‹ã“ã¨ã€‚
 
