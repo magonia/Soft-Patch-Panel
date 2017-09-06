@@ -1,0 +1,38 @@
+
+■動作手順イメージ
+
+※コンフィグ名、コマンド名、引数などは仮。
+
+
+●1.コンフィグファイルをviなどでユーザにて作成。
+
+	$ vi /usr/local/etc/spp/vf.json
+
+
+●2.spp.py起動
+
+	$ python /usr/local/bin/spp.py -p 5555 -s 6666
+
+
+●3.プライマリ起動
+
+	$ sudo /usr/local/bin/spp_primary \
+	    -c 0x02 -n 4 \
+	    --socket-mem 512,512 \
+	    --huge-dir=/dev/hugepages \
+	    --proc-type=primary \
+	    -- \
+	    -p 0x03 \
+	    -n 4 \
+	    -s 192.168.122.1:5555
+
+
+●4.セカンダリ起動
+	$ sudo /usr/local/bin/spp_vf \
+	    -c 0x06 -n 4 \
+	    --proc-type=secondary
+
+
+●5.VM起動(コマンドイメージ割愛)
+
+
