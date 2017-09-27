@@ -23,15 +23,16 @@ enum SPP_LONGOPT_RETVAL {
 	/* add below */
 
 	SPP_LONGOPT_RETVAL_CONFIG,
-	SPP_LONGOPT_RETVAL_PROCESS_ID
+	SPP_LONGOPT_RETVAL_PROCESS_ID,
+	SPP_LONGOPT_RETVAL_VHOST_CLIENT
 };
 
 /* struct */
 struct startup_param {
-	uint64_t cpu;
 	int process_id;
 	char server_ip[INET_ADDRSTRLEN];
 	int server_port;
+	int vhost_client;
 };
 
 struct patch_info {
@@ -68,10 +69,15 @@ static char config_file_path[PATH_MAX];
 static void
 usage(const char *progname)
 {
-	RTE_LOG(INFO, APP, "Usage: %s [EAL args] -- --process-id PROC_ID [--config CONFIG_FILE_PATH] -s SERVER_IP:SERVER_PORT\n"
+	RTE_LOG(INFO, APP, "Usage: %s [EAL args] --"
+			" --process-id PROC_ID"
+			" [--config CONFIG_FILE_PATH]"
+			" -s SERVER_IP:SERVER_PORT"
+			" [--vhost-client]\n"
 			" --process-id PROCESS_ID   : My process ID\n"
 			" --config CONFIG_FILE_PATH : specific config file path\n"
 			" -s SERVER_IP:SERVER_PORT  : Access information to the server\n"
+			" --vhost-client            : Run vhost on client\n"
 			, progname);
 }
 
@@ -103,7 +109,7 @@ add_ring_pmd(int ring_id)
  * Set VHOST PMD
  */
 static int
-add_vhost_pmd(int index)
+add_vhost_pmd(int index, int client)
 {
 	struct rte_eth_conf port_conf = {
 		.rxmode = { .max_rx_pkt_len = ETHER_MAX_LEN }
@@ -129,7 +135,8 @@ add_vhost_pmd(int index)
 	name = get_vhost_backend_name(index);
 	iface = get_vhost_iface_name(index);
 
-	sprintf(devargs, "%s,iface=%s,queues=%d", name, iface, nr_queues);
+	sprintf(devargs, "%s,iface=%s,queues=%d,client=%d",
+			name, iface, nr_queues, client);
 	ret = rte_eth_dev_attach(devargs, &vhost_port_id);
 	if (unlikely(ret < 0)) {
 		RTE_LOG(ERR, APP, "rte_eth_dev_attach error. (ret = %d)\n", ret);
@@ -245,66 +252,6 @@ stop_process(int signal) {
 }
 
 /*
- * 起動パラメータのCPUのbitmapを数値へ変換
- */
-static int
-parse_cpu_bit(uint64_t *cpu, const char *cpu_bit)
-{
-	char *endptr = NULL;
-	uint64_t temp;
-
-	temp = strtoull(cpu_bit, &endptr, 0);
-	if (unlikely(endptr == cpu_bit) || unlikely(*endptr != '\0')) {
-		return -1;
-	}
-
-	*cpu = temp;
-	RTE_LOG(DEBUG, APP, "cpu = %lu", *cpu);
-	return 0;
-}
-
-/*
- * Parse the dpdk arguments for use in client app.
- */
-static int
-parse_dpdk_args(int argc, char *argv[])
-{
-	int cnt;
-	int option_index, opt;
-	const int argcopt = argc;
-	char *argvopt[argcopt];
-	const char *progname = argv[0];
-	static struct option lgopts[] = { {0} };
-
-	/* getoptを使用するとargvが並び変わるみたいなので、コピーを実施 */
-	for (cnt = 0; cnt < argcopt; cnt++) {
-		argvopt[cnt] = argv[cnt];
-	}
-
-	/* Check DPDK parameter */
-	optind = 0;
-	opterr = 0;
-	while ((opt = getopt_long(argc, argvopt, "c:", lgopts,
-			&option_index)) != EOF) {
-		switch (opt) {
-		case 'c':
-			/* CPU */
-			if (parse_cpu_bit(&g_startup_param.cpu, optarg) != 0) {
-				usage(progname);
-				return -1;
-			}
-			break;
-		default:
-			/* CPU */
-			/* DPDKのパラメータは他にもあるので、エラーとはしない */
-			break;
-		}
-	}
-
-	return 0;
-}
-
-/*
  * Parses the process ID of the application argument.
  */
 static int
@@ -368,6 +315,7 @@ parse_app_args(int argc, char *argv[])
 	static struct option lgopts[] = { 
 			{ "config", required_argument, NULL, SPP_LONGOPT_RETVAL_CONFIG },
 			{ "process-id", required_argument, NULL, SPP_LONGOPT_RETVAL_PROCESS_ID },
+			{ "vhost-client", no_argument, NULL, SPP_LONGOPT_RETVAL_VHOST_CLIENT },
 			{ 0 },
 	};
 
@@ -375,6 +323,9 @@ parse_app_args(int argc, char *argv[])
 	for (cnt = 0; cnt < argcopt; cnt++) {
 		argvopt[cnt] = argv[cnt];
 	}
+
+	/* Clear startup parameters */
+	memset(&g_startup_param, 0x00, sizeof(g_startup_param));
 
 	/* Check application parameter */
 	optind = 0;
@@ -396,6 +347,9 @@ parse_app_args(int argc, char *argv[])
 			}
 			proc_flg = 1;
 			break;
+		case SPP_LONGOPT_RETVAL_VHOST_CLIENT:
+			g_startup_param.vhost_client = 1;
+			break;
 		case 's':
 			if (parse_app_server(optarg, g_startup_param.server_ip,
 					&g_startup_param.server_port) != 0) {
@@ -416,11 +370,12 @@ parse_app_args(int argc, char *argv[])
 		usage(progname);
 		return -1;
 	}
-	RTE_LOG(INFO, APP, "application arguments value. (process id = %d, config = %s, server = %s:%d)\n",
+	RTE_LOG(INFO, APP, "application arguments value. (process id = %d, config = %s, server = %s:%d, vhost client = %d)\n",
 			g_startup_param.process_id,
 			config_file_path,
 			g_startup_param.server_ip,
-			g_startup_param.server_port);
+			g_startup_param.server_port,
+			g_startup_param.vhost_client);
 	return 0;
 }
 
@@ -493,7 +448,6 @@ set_form_proc_info(struct spp_config_area *config)
 	int core_cnt, rx_start, rx_cnt, tx_start, tx_cnt;
 	enum port_type if_type;
 	int if_no;
-	uint64_t cpu_bit = 0;
 	struct spp_config_functions *core_func = NULL;
 	struct spp_core_info *core_info = NULL;
 	struct patch_info *patch_info = NULL;
@@ -517,7 +471,12 @@ set_form_proc_info(struct spp_config_area *config)
 
 		/* Set CORE type */
 		core_info->type = core_func->type;
-		cpu_bit |= 1 << core_func->core_no;
+		if (!rte_lcore_is_enabled(core_func->core_no)) {
+			/* CPU mismatch */
+			RTE_LOG(ERR, APP, "CPU mismatch (cpu = %u)\n",
+					core_func->core_no);
+			return -1;
+		}
 
 		/* Set RX port */
 		rx_start = core_info->num_rx_port;
@@ -570,14 +529,6 @@ set_form_proc_info(struct spp_config_area *config)
 		}
 	}
 
-#if 0 /* bugfix#385 */
-	if (unlikely((cpu_bit & g_startup_param.cpu) != cpu_bit)) {
-		/* CPU mismatch */
-		RTE_LOG(ERR, APP, "CPU mismatch (cpu param = %lx, config = %lx)\n",
-				g_startup_param.cpu, cpu_bit);
-		return -1;
-	}
-#endif
 	return 0;
 }
 
@@ -683,7 +634,7 @@ set_vhost_interface(struct spp_config_area *config)
 		}
 
 		/* Set DPDK port */
-		int dpdk_port = add_vhost_pmd(vhost_cnt);
+		int dpdk_port = add_vhost_pmd(vhost_cnt, g_startup_param.vhost_client);
 		if (unlikely(dpdk_port < 0)) {
 			RTE_LOG(ERR, APP, "VHOST add failed. (no = %d)\n",
 					vhost_cnt);
@@ -843,6 +794,11 @@ static void
 del_vhost_sockfile(struct patch_info *vhost_patchs)
 {
 	int cnt;
+
+	/* Do not delete for vhost client. */
+	if (g_startup_param.vhost_client != 0)
+		return;
+
 	for (cnt = 0; cnt < RTE_MAX_ETHPORTS; cnt++) {
 		if (likely(vhost_patchs[cnt].use_flg == 0)) {
 			/* VHOST未使用はスキップ */
@@ -883,12 +839,6 @@ ut_main(int argc, char *argv[])
 
 	unsigned int main_lcore_id = 0xffffffff;
 	while(1) {
-		/* Parse dpdk parameters */
-		int ret_parse = parse_dpdk_args(argc, argv);
-		if (unlikely(ret_parse != 0)) {
-			break;
-		}
-
 		/* DPDK initialize */
 		int ret_dpdk = rte_eal_init(argc, argv);
 		if (unlikely(ret_dpdk < 0)) {
@@ -903,7 +853,7 @@ ut_main(int argc, char *argv[])
 		rte_log_set_global_level(RTE_LOG_LEVEL);
 
 		/* Parse application parameters */
-		ret_parse = parse_app_args(argc, argv);
+		int ret_parse = parse_app_args(argc, argv);
 		if (unlikely(ret_parse != 0)) {
 			break;
 		}
