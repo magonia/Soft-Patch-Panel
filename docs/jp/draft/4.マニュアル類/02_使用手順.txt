@@ -91,9 +91,6 @@ SPP-VMマシン   ： SPP-HOSTマシン上で起動されるSPPと接続するVM
 	# vhostと接続するIFをUP（およびIPアドレスを設定）
 	sudo ifconfig IF名 inet IPアドレス netmask ネットマスク up
 
-	# 対向マシンのIPアドレス／MACアドレスをARPテーブルに登録
-	sudo arp -s 対向マシンIPアドレス 対向マシンMACアドレス -i IF名
-
 	# vhostと接続するIFのオフロード機能をOFF
 	sudo ethtool -K IF名 tx off
 
@@ -101,9 +98,6 @@ SPP-VMマシン   ： SPP-HOSTマシン上で起動されるSPPと接続するVM
 ================================================================================
 ■対向マシン設定  ＠対向マシン
 ================================================================================
-
-	# SPP-VMのIPアドレス／MACアドレスをARPテーブルに登録
-	sudo arp -s SPP-VM_IPアドレス SPP-VM_MACアドレス -i IF名
 
 	# SPP-VMと通信するIFのオフロード機能をOFF
 	ethtool -K IF名 tx off
