@@ -1,0 +1,281 @@
+■前提
+
+・対向サーバは設定済み。
+・SPPで使用するNICはDPDKバインド済み。
+
+
+■環境準備
+
+○１．環境変数設定
+
+        export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint5
+        export RTE_SDK=$SPRINT_REVIEW_HOME/dpdk-17.05
+        export SPP_HOME=$SPRINT_REVIEW_HOME/SPP-OSS
+
+        cd $SPP_HOME
+
+
+○２．各プロセス起動。
+
+        各プロセスは端末を占有するため、各々で端末を起動すること。
+
+        # SPP コントローラ起動
+        sudo python ./src/spp.py -p 5555 -s 6666
+
+        # SPP プライマリ起動
+        sudo ./src/primary/x86_64-native-linuxapp-gcc/spp_primary -c 0x02 -n 4 --socket-mem 512,512 --huge-dir=/run/hugepages/kvm --proc-type=primary -- -p 0x03 -n 8 -s 127.0.0.1:5555
+
+        # SPP-AGENT疑似 nc起動①
+        while true; do nc -l 11111; done
+
+        # SPP セカンダリ起動①
+        sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x00fd -n 4 --proc-type=secondary -- --process-id 1 --config $SPRINT_REVIEW_HOME/spp_vf1_without_cmtab.json -s 127.0.0.1:11111
+
+        # SPP-AGENT疑似 nc起動②
+        while true; do nc -l 11112; done
+
+        # SPP セカンダリ起動②
+        sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x3f01 -n 4 --proc-type=secondary -- --process-id 2 --config $SPRINT_REVIEW_HOME/spp_vf2_without_cmtab.json -s 127.0.0.1:11112
+
+
+○３．SPP VM起動
+
+        virsh start spp-vm1
+        virsh start spp-vm2
+
+
+○４．SPP VM1設定
+
+        ssh -oStrictHostKeyChecking=no ntt@192.168.122.31
+
+        # vhostと接続するIFをUP
+        sudo ifconfig ens4 inet 192.168.240.21 netmask 255.255.255.0 up
+        sudo ifconfig ens5 inet 192.168.250.22 netmask 255.255.255.0 up
+
+        # 対向サーバのIPアドレス／MACアドレスをARPテーブルに登録
+        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
+        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
+
+        # vhostと接続するIFのオフロード機能をOFF
+        sudo ethtool -K ens4 tx off
+        sudo ethtool -K ens5 tx off
+
+
+○５．SPP VM2設定
+
+        ssh -oStrictHostKeyChecking=no ntt@192.168.122.32
+
+        # vhostと接続するIFをUP
+        sudo ifconfig ens4 inet 192.168.240.31 netmask 255.255.255.0 up
+        sudo ifconfig ens5 inet 192.168.250.32 netmask 255.255.255.0 up
+
+        # 対向サーバのIPアドレス／MACアドレスをARPテーブルに登録
+        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
+        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
+
+        # vhostと接続するIFのオフロード機能をOFF
+        sudo ethtool -K ens4 tx off
+        sudo ethtool -K ens5 tx off
+
+
+■試験手順
+
+○１．振分MACアドレス未登録の動作確認
+
+
+        SSH接続が成功しないことを確認。
+        振分MACアドレス未登録のため、SPPセカンダリにてパケットは破棄される。
+        ※SPPセカンダリの標準出力に出力あり。
+
+        ＠対向サーバ
+
+        # SPP-VM1へpNIC0経由でSSHログイン
+        ssh ntt@192.168.240.21
+
+        # SPP-VM1へpNIC1経由でSSHログイン
+        ssh ntt@192.168.250.22
+
+        # SPP-VM2へpNIC0経由でSSHログイン
+        ssh ntt@192.168.240.31
+
+        # SPP-VM2へpNIC1経由でSSHログイン
+        ssh ntt@192.168.250.32
+
+
+○２．コマンドによるプロセス番号取得
+
+        ＠SPPホスト
+
+        nc1より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "process"
+            }
+          ]
+        }
+
+
+        nc2より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "process"
+            }
+          ]
+        }
+
+
+○３．振分MACアドレス登録
+
+        ＠SPPホスト
+
+        nc1より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "classifier_table",
+              "type": "mac",
+              "value": "52:54:00:12:34:56",
+              "port": "ring0"
+            },
+            {
+              "command": "classifier_table",
+              "type": "mac",
+              "value": "52:54:00:12:34:58",
+              "port": "ring1"
+            },
+            {
+              "command": "flush"
+            }
+          ]
+        }
+
+
+        nc2より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "classifier_table",
+              "type": "mac",
+              "value": "52:54:00:12:34:57",
+              "port": "ring4"
+            },
+            {
+                          "command": "flush"
+            }
+          ]
+        }
+
+
+○４．振分MACアドレス登録後の動作確認
+
+        SSH接続が成功することを確認。
+
+        ＠対向サーバ
+
+        # SPP-VM1へpNIC0経由でSSHログイン
+        ssh ntt@192.168.240.21
+
+        # SPP-VM1へpNIC1経由でSSHログイン
+        ssh ntt@192.168.250.22
+
+        # SPP-VM2へpNIC0経由でSSHログイン
+        ssh ntt@192.168.240.31
+
+        # SPP-VM2へpNIC1経由でSSHログイン
+        ssh ntt@192.168.250.32
+
+
+○５．振分MACアドレス一部解除
+
+        SPP-VM1,2のそれぞれ片方を解除。
+
+        ＠SPPホスト
+
+        nc1より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "classifier_table",
+              "type": "mac",
+              "value": "52:54:00:12:34:58",
+              "port": "unuse"
+            },
+            {
+              "command": "flush"
+            }
+          ]
+        }
+
+
+        nc2より以下のコマンド発行。
+        ※改行を入力しないとncは送信しません。
+
+        {
+          "commands": [
+            {
+              "command": "classifier_table",
+              "type": "mac",
+              "value": "52:54:00:12:34:57",
+              "port": "unuse"
+            },
+            {
+              "command": "flush"
+            }
+          ]
+        }
+
+
+○６．振分MACアドレス一部解除後の動作確認
+
+        SSH接続が成功することを確認。
+
+        ＠対向サーバ
+
+        # SPP-VM1へpNIC0経由でSSHログイン
+        # 接続可能
+        ssh ntt@192.168.240.21
+
+        # SPP-VM1へpNIC1経由でSSHログイン
+        # 接続不可
+        ssh ntt@192.168.250.22
+
+        # SPP-VM2へpNIC0経由でSSHログイン
+        # 接続不可
+        ssh ntt@192.168.240.31
+
+        # SPP-VM2へpNIC1経由でSSHログイン
+        # 接続可能
+        ssh ntt@192.168.250.32
+
+
+■参考・対向
+
+        # SPP-VMと通信するIFをUP
+        sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
+        sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
+
+        # SPP-VMのIPアドレス／MACアドレスをARPテーブルに登録
+        sudo arp -s 192.168.240.21 52:54:00:12:34:56 -i enp4s0f0
+        sudo arp -s 192.168.240.31 52:54:00:12:34:58 -i enp4s0f0
+        sudo arp -s 192.168.250.22 52:54:00:12:34:57 -i enp5s0f0
+        sudo arp -s 192.168.250.32 52:54:00:12:34:59 -i enp5s0f0
+
+        # SPP-VMと通信するIFのオフロード機能をOFF
+        sudo ethtool -K enp4s0f0 tx off
+        sudo ethtool -K enp5s0f0 tx off
+
+
+        virsh shutdown spp-vm1
+        virsh shutdown spp-vm2

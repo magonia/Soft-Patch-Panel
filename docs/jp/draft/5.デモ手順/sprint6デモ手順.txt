@@ -1,0 +1,163 @@
+■前提
+
+・対向サーバは設定済み。
+・SPPで使用するNICはDPDKバインド済み。
+
+
+■使用端末
+
+・SPPコントローラ       x1
+・SPPプライマリ         x1
+・SPPセカンダリ         x6
+・対向マシン操作        x1
+・対向マシンtcpdump用   x2
+・VM操作用              x1
+・VM1tcpdump用          x2
+・VM2tcpdump用          x2
+
+
+■環境準備
+
+○１．環境変数設定
+
+export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint6
+export RTE_SDK=$SPRINT_REVIEW_HOME/dpdk-17.05
+export SPP_HOME=$SPRINT_REVIEW_HOME/SPP-OSS
+
+cd $SPP_HOME
+
+
+○２．各プロセス起動。
+
+各プロセスは端末を占有するため、各々で端末を起動すること。
+
+# SPP コントローラ起動（改造版を使用）
+sudo python ./src/spp_vf.py -p 5555 -s 6666
+
+# SPP プライマリ起動
+sudo ./src/primary/x86_64-native-linuxapp-gcc/spp_primary -c 0x02 -n 4 --socket-mem 512,512 --huge-dir=/run/hugepages/kvm --proc-type=primary -- -p 0x03 -n 12 -s 127.0.0.1:5555
+
+###
+# SPP セカンダリ起動
+
+# pNIC0側 - pNIC隣接C&M
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x000e -n 4 --proc-type=secondary -- --process-id 1 --config $SPRINT_REVIEW_HOME/spp_vf1-1.json -s 127.0.0.1:6666
+
+# pNIC0側 - VM1接続vhost隣接M&C
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x0052 -n 4 --proc-type=secondary -- --process-id 2 --config $SPRINT_REVIEW_HOME/spp_vf1-2.json -s 127.0.0.1:6666
+
+# pNIC0側 - VM2接続vhost隣接M&C
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x00a2 -n 4 --proc-type=secondary -- --process-id 3 --config $SPRINT_REVIEW_HOME/spp_vf1-3.json -s 127.0.0.1:6666
+
+# pNIC1側 - pNIC隣接C&M
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x0302 -n 4 --proc-type=secondary -- --process-id 4 --config $SPRINT_REVIEW_HOME/spp_vf2-1.json -s 127.0.0.1:6666
+
+# pNIC1側 - VM1接続vhost隣接M&C
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x1402 -n 4 --proc-type=secondary -- --process-id 5 --config $SPRINT_REVIEW_HOME/spp_vf2-2.json -s 127.0.0.1:6666
+
+# pNIC1側 - VM2接続vhost隣接M&C
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x2802 -n 4 --proc-type=secondary -- --process-id 6 --config $SPRINT_REVIEW_HOME/spp_vf2-3.json -s 127.0.0.1:6666
+
+
+○３．SPP VM起動
+
+virsh start spp-vm1
+virsh start spp-vm2
+
+
+○４．SPP VM1設定
+
+ssh -oStrictHostKeyChecking=no ntt@192.168.122.31
+
+# vhostと接続するIFをUP
+sudo ifconfig ens4 inet 192.168.240.21 netmask 255.255.255.0 up
+sudo ifconfig ens5 inet 192.168.250.22 netmask 255.255.255.0 up
+
+# vhostと接続するIFのオフロード機能をOFF
+sudo ethtool -K ens4 tx off
+sudo ethtool -K ens5 tx off
+
+
+○５．SPP VM2設定
+
+ssh -oStrictHostKeyChecking=no ntt@192.168.122.32
+
+# vhostと接続するIFをUP
+sudo ifconfig ens4 inet 192.168.240.31 netmask 255.255.255.0 up
+sudo ifconfig ens5 inet 192.168.250.32 netmask 255.255.255.0 up
+
+# vhostと接続するIFのオフロード機能をOFF
+sudo ethtool -K ens4 tx off
+sudo ethtool -K ens5 tx off
+
+
+○６．振分設定を投入
+
+# spp_vf.pyに下記コマンドを投入
+
+###
+# pNIC0側
+
+# pNIC隣接振分 - pNIC->vhost方向
+# VMのMACアドレスを登録
+sec 1; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:56", "port":"ring0"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:58", "port":"ring1"},{"command":"flush"}]}
+
+# VM1接続vhost隣接振分 - vhost->pNIC方向
+# デフォルト転送先、および隣接VMのMACアドレスを登録
+sec 2; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring2"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:58", "port":"ring4"},{"command":"flush"}]}
+
+# VM2接続vhost隣接振分 - vhost->pNIC方向
+# デフォルト転送先、および隣接VMのMACアドレスを登録
+sec 3; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring3"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:56", "port":"ring5"},{"command":"flush"}]}
+
+
+###
+# pNIC1側
+
+# pNIC隣接振分 - pNIC->vhost方向
+# VMのMACアドレスを登録
+sec 4; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:57", "port":"ring6"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:59", "port":"ring7"},{"command":"flush"}]}
+
+# VM1接続vhost隣接振分 - vhost->pNIC方向
+# デフォルト転送先、および隣接VMのMACアドレスを登録
+sec 5; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring8"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:59", "port":"ring10"},{"command":"flush"}]}
+
+# VM2接続vhost隣接振分 - vhost->pNIC方向
+# デフォルト転送先、および隣接VMのMACアドレスを登録
+sec 6; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring9"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:12:34:57", "port":"ring11"},{"command":"flush"}]}
+
+
+○７．ARPテーブル確認
+
+# 各VMのARPテーブルを確認。
+arp
+
+# 試験IPが登録されていれば削除
+sudo arp -d <IPアドレス>
+
+
+○８．キャプチャ実施
+
+# 各VMでキャプチャを行い、ブロードキャストフレーム（ARP）などを確認
+sudo tcpdump -i <IF名> -s 0 -nnn
+
+
+■参考
+
+VM1
+pNIC0: 192.168.240.21
+pNIC1: 192.168.250.22
+
+VM2
+pNIC0: 192.168.240.31
+pNIC1: 192.168.250.32
+
+
+# 対向でSPP-VMと通信するIFをUP
+sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
+sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
+
+# 対向でSPP-VMと通信するIFのオフロード機能をOFF
+sudo ethtool -K enp4s0f0 tx off
+sudo ethtool -K enp5s0f0 tx off
+

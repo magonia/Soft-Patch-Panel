@@ -1,0 +1,145 @@
+■前提
+・対向サーバ(R730n02:172.30.202.121)は設定済み。
+・SPPで使用するNICはDPDKバインド済み。
+
+■使用端末
+・syslog確認用          x1 以降①
+・SPPコントローラ       x1 以降②
+・SPPプライマリ         x1 以降③
+・SPPセカンダリ         x1 以降④ ※プロセスは6個必要だが、デーモンプロセスとして>起動出来る様にコンパイルオプションを変更している為、画面は1つで良い。
+・VM操作用              x2 以降⑤⑥
+・対向マシン操作        x1 以降⑦
+
+■試験手順
+試験手順は下記の手順となる。
+１．SPPを起動する
+２．VMを起動する
+３．statusコマンドを投入、MAC未登録状態が期待通りに出力される事を確認する
+４．classifier_tableのMACアドレスを登録する
+５．statusコマンドを投入、MAC登録状態が期待通りに出力される事を確認する
+
+■準備
+・画面①でsyslogをtailする
+tail -F /var/log/syslog
+
+■試験手順1 SPP起動
+・画面②でSPPコントローラ起動
+export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint9
+export SPP_HOME=$SPRINT_REVIEW_HOME/SPP-OSS
+cd $SPP_HOME
+sudo python ./src/spp_vf.py -p 5555 -s 6666
+
+・画面③でSPPプライマリ起動
+export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint9
+export SPP_HOME=$SPRINT_REVIEW_HOME/SPP-OSS
+cd $SPP_HOME
+sudo ./src/primary/x86_64-native-linuxapp-gcc/spp_primary -c 0x02 -n 4 --socket-mem 512,512 --huge-dir=/run/hugepages/kvm --proc-type=primary -- -p 0x03 -n 12 -s 127.0.0.1:5555
+
+・画面④でSPPセカンダリ起動 ※画面①を確認しながら、実施する
+export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint9
+export SPP_HOME=$SPRINT_REVIEW_HOME/SPP-OSS
+cd $SPP_HOME
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x000e -n 4 --proc-type=secondary -- --process-id 1 --config $SPRINT_REVIEW_HOME/spp_vf1-1.json -s 127.0.0.1:6666 --vhost-client
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x0052 -n 4 --proc-type=secondary -- --process-id 2 --config $SPRINT_REVIEW_HOME/spp_vf1-2.json -s 127.0.0.1:6666 --vhost-client
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x00a2 -n 4 --proc-type=secondary -- --process-id 3 --config $SPRINT_REVIEW_HOME/spp_vf1-3.json -s 127.0.0.1:6666 --vhost-client
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x0302 -n 4 --proc-type=secondary -- --process-id 4 --config $SPRINT_REVIEW_HOME/spp_vf2-1.json -s 127.0.0.1:6666 --vhost-client
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x1402 -n 4 --proc-type=secondary -- --process-id 5 --config $SPRINT_REVIEW_HOME/spp_vf2-2.json -s 127.0.0.1:6666 --vhost-client
+sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x2802 -n 4 --proc-type=secondary -- --process-id 6 --config $SPRINT_REVIEW_HOME/spp_vf2-3.json -s 127.0.0.1:6666 --vhost-client
+
+■試験手順2 VM起動
+・画面⑤でVM起動
+virsh start spp-vm1
+
+・画面⑤で起動したVMへログイン
+ssh -oStrictHostKeyChecking=no ubuntu@192.168.122.11
+password:ubuntu
+
+・画面⑤で設定
+sudo ifconfig ens6 inet 192.168.240.11 netmask 255.255.255.0 up
+sudo ifconfig ens7 inet 192.168.250.11 netmask 255.255.255.0 up
+ifconfig ens6; ifconfig ens7
+sudo ethtool -K ens6 tx off
+sudo ethtool -K ens7 tx off
+
+・画面⑥でVM起動
+virsh start spp-vm2
+
+・画面⑥で起動したVMへログイン
+ssh -oStrictHostKeyChecking=no ubuntu@192.168.122.12
+
+・画面⑥で設定
+sudo ifconfig ens6 inet 192.168.240.12 netmask 255.255.255.0 up
+sudo ifconfig ens7 inet 192.168.250.12 netmask 255.255.255.0 up
+ifconfig ens6; ifconfig ens7
+sudo ethtool -K ens6 tx off
+sudo ethtool -K ens7 tx off
+
+■試験手順3 statusコマンド投入確認(MAC未登録)
+・画面②のSPPコントローラからMACアドレスを登録
+sec 1; {"commands": [{"command": "status"}]}
+sec 2; {"commands": [{"command": "status"}]}
+sec 3; {"commands": [{"command": "status"}]}
+sec 4; {"commands": [{"command": "status"}]}
+sec 5; {"commands": [{"command": "status"}]}
+sec 6; {"commands": [{"command": "status"}]}
+
+■試験手順4 MACアドレス登録
+・画面②のSPPコントローラからMACアドレスを登録
+sec 1; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:01", "port":"ring0"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:01", "port":"ring1"},{"command":"flush"}]}
+sec 2; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring2"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:01", "port":"ring4"},{"command":"flush"}]}
+sec 3; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring3"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:01", "port":"ring5"},{"command":"flush"}]}
+sec 4; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:02", "port":"ring6"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:02", "port":"ring7"},{"command":"flush"}]}
+sec 5; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring8"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:02", "port":"ring10"},{"command":"flush"}]}
+sec 6; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"ring9"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:02", "port":"ring11"},{"command":"flush"}]}
+
+■試験手順5 statusコマンド投入確認(MAC登録)
+・画面②のSPPコントローラからMACアドレスを登録
+sec 1; {"commands": [{"command": "status"}]}
+sec 2; {"commands": [{"command": "status"}]}
+sec 3; {"commands": [{"command": "status"}]}
+sec 4; {"commands": [{"command": "status"}]}
+sec 5; {"commands": [{"command": "status"}]}
+sec 6; {"commands": [{"command": "status"}]}
+
+
+■参考
+classifier設定削除手順
+・画面②のSPPコントローラからMACアドレスを登録
+sec 1; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:01", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:01", "port":"unuse"},{"command":"flush"}]}
+sec 2; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:01", "port":"unuse"},{"command":"flush"}]}
+sec 3; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:01", "port":"unuse"},{"command":"flush"}]}
+sec 4; {"commands":[{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:02", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:02", "port":"unuse"},{"command":"flush"}]}
+sec 5; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:02:00:02", "port":"unuse"},{"command":"flush"}]}
+sec 6; {"commands":[{"command":"classifier_table", "type":"mac", "value":"default", "port":"unuse"},{"command":"classifier_table", "type":"mac", "value":"52:54:00:01:00:02", "port":"unuse"},{"command":"flush"}]}
+
+SPP停止手順
+・画面④でSPPセカンダリ停止
+sudo pkill -2 spp_vf
+
+・画面③でSPPプライマリ停止
+Ctrl+C
+
+・画面②でSPPコントローラ停止
+bye
+
+VM停止手順
+virsh shutdown spp-vm1
+virsh shutdown spp-vm2
+
+VM1
+pNIC0: 192.168.240.11
+pNIC1: 192.168.250.11
+
+VM2
+pNIC0: 192.168.240.12
+pNIC1: 192.168.250.12
+
+
+# 対向でSPP-VMと通信するIFをUP
+sudo ifconfig enp4s0f0 inet 192.168.240.31 netmask 255.255.255.0 up
+sudo ifconfig enp5s0f0 inet 192.168.250.33 netmask 255.255.255.0 up
+ifconfig enp4s0f0; ifconfig enp5s0f0
+
+# 対向でSPP-VMと通信するIFのオフロード機能をOFF
+sudo ethtool -K enp4s0f0 tx off
+sudo ethtool -K enp5s0f0 tx off
