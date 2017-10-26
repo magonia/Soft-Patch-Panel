@@ -1,27 +1,48 @@
-â– è©¦é¨“ç›®çš„
-æŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ç™»éŒ²å‰å¾Œã«ãŠã„ã¦ã€æœŸå¾…é€šã‚Šã«å‹•ä½œã™ã‚‹äº‹ã‚’ç¢ºèªã™ã‚‹ã€‚
-æŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹æœªç™»éŒ²æ™‚ï¼šå¯¾å‘ãƒŽãƒ¼ãƒ‰ã‹ã‚‰ã®sshæŽ¥ç¶šãŒå‡ºæ¥ãšã«ã‚¨ãƒ©ãƒ¼çµ‚äº†ã™ã‚‹äº‹
-æŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ç™»éŒ²æ™‚ï¼šå¯¾å‘ãƒŽãƒ¼ãƒ‰ã‹ã‚‰ã®sshæŽ¥ç¶šãŒæˆåŠŸã™ã‚‹äº‹
-æŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ä¸€éƒ¨å‰Šé™¤æ™‚ï¼šMACã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å‰Šé™¤ã—ãŸç®‡æ‰€ã¯ã€å¯¾å‘ãƒŽãƒ¼ãƒ‰ã‹ã‚‰ã®sshæŽ¥ç¶šãŒå‡ºæ¥ãšã«ã‚¨ãƒ©ãƒ¼çµ‚äº†ã™ã‚‹äº‹ã€‚å‰Šé™¤ã›ãšã«æ®‹ã£ã¦ã„ã‚‹MACã‚¢ãƒ‰ãƒ¬ã‚¹ã¯ã€å½±éŸ¿ã‚’å—ã‘ãšã«sshæŽ¥ç¶šãŒæˆåŠŸã™ã‚‹äº‹
+¡ŽŽŒ±–Ú“I
+U•ªMACƒAƒhƒŒƒX“o˜^‘OŒã‚É‚¨‚¢‚ÄAŠú‘Ò’Ê‚è‚É“®ì‚·‚éŽ–‚ðŠm”F‚·‚éB
+U•ªMACƒAƒhƒŒƒX–¢“o˜^ŽžF‘ÎŒüƒm[ƒh‚©‚ç‚ÌsshÚ‘±‚ªo—ˆ‚¸‚ÉƒGƒ‰[I—¹‚·‚éŽ–
+U•ªMACƒAƒhƒŒƒX“o˜^ŽžF‘ÎŒüƒm[ƒh‚©‚ç‚ÌsshÚ‘±‚ª¬Œ÷‚·‚éŽ–
+U•ªMACƒAƒhƒŒƒXˆê•”íœŽžFMACƒAƒhƒŒƒX‚ðíœ‚µ‚½‰ÓŠ‚ÍA‘ÎŒüƒm[ƒh‚©‚ç‚ÌsshÚ‘±‚ªo—ˆ‚¸‚ÉƒGƒ‰[I—¹‚·‚éŽ–Bíœ‚¹‚¸‚ÉŽc‚Á‚Ä‚¢‚éMACƒAƒhƒŒƒX‚ÍA‰e‹¿‚ðŽó‚¯‚¸‚ÉsshÚ‘±‚ª¬Œ÷‚·‚éŽ–
 
-â– è©¦é¨“æ‰‹é †
-è©¦é¨“æ‰‹é †ã¯ä¸‹è¨˜ã®æ‰‹é †ã¨ãªã‚‹ã€‚
-ï¼‘ï¼ŽSPPã‚’èµ·å‹•ã™ã‚‹ï¼ˆç’°å¢ƒæº–å‚™ï¼‘ï¼Žï¼’ï¼Žï¼‰
-ï¼’ï¼ŽVMã‚’èµ·å‹•ã™ã‚‹ï¼ˆç’°å¢ƒæº–å‚™ï¼“ï¼Žï¼”ï¼Žï¼•ï¼Žï¼‰
-ï¼“ï¼ŽæŒ¯åˆ†ã‘MACæœªç™»éŒ²çŠ¶æ…‹ã§ã€å¯¾å¿œãƒŽãƒ¼ãƒ‰ã‹ã‚‰sshæŽ¥ç¶šã‚’å®Ÿæ–½ã™ã‚‹ï¼ˆè©¦é¨“æ‰‹é †ï¼‘ï¼Žï¼‰
-ï¼”ï¼ŽæŒ¯åˆ†ã‘MACã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ç™»éŒ²ã™ã‚‹ï¼ˆè©¦é¨“æ‰‹é †ï¼’ï¼Žï¼“ï¼Žï¼‰
-ï¼•ï¼ŽæŒ¯åˆ†ã‘MACç™»éŒ²çŠ¶æ…‹ã§ã€å¯¾å¿œãƒŽãƒ¼ãƒ‰ã‹ã‚‰sshæŽ¥ç¶šã‚’å®Ÿæ–½ã™ã‚‹ï¼ˆè©¦é¨“æ‰‹é †ï¼”ï¼Žï¼‰
-ï¼–ï¼ŽæŒ¯åˆ†ã‘MACã‚¢ãƒ‰ãƒ¬ã‚¹ã®ä¸€éƒ¨ã‚’å‰Šé™¤ã™ã‚‹ï¼ˆè©¦é¨“æ‰‹é †ï¼•ï¼Žï¼‰
-ï¼—ï¼ŽæŒ¯åˆ†ã‘MACãŒä¸€éƒ¨ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹çŠ¶æ…‹ã§ã€å¯¾å¿œãƒŽãƒ¼ãƒ‰ã‹ã‚‰sshæŽ¥ç¶šã‚’å®Ÿæ–½ã™ã‚‹ï¼ˆè©¦é¨“æ‰‹é †ï¼–ï¼Žï¼‰
+¡ŽŽŒ±Žè‡
+ŽŽŒ±Žè‡‚Í‰º‹L‚ÌŽè‡‚Æ‚È‚éB
+‚PDSPP‚ð‹N“®‚·‚éiŠÂ‹«€”õ‚PD‚QDj
+‚QDVM‚ð‹N“®‚·‚éiŠÂ‹«€”õ‚RD‚SD‚TDj
+‚RDU•ª‚¯MAC–¢“o˜^ó‘Ô‚ÅA‘Î‰žƒm[ƒh‚©‚çsshÚ‘±‚ðŽÀŽ{‚·‚éiŽŽŒ±Žè‡‚PDj
+‚SDU•ª‚¯MACƒAƒhƒŒƒX‚ð“o˜^‚·‚éiŽŽŒ±Žè‡‚QD‚RDj
+‚TDU•ª‚¯MAC“o˜^ó‘Ô‚ÅA‘Î‰žƒm[ƒh‚©‚çsshÚ‘±‚ðŽÀŽ{‚·‚éiŽŽŒ±Žè‡‚SDj
+‚UDU•ª‚¯MACƒAƒhƒŒƒX‚Ìˆê•”‚ðíœ‚·‚éiŽŽŒ±Žè‡‚TDj
+‚VDU•ª‚¯MAC‚ªˆê•”“o˜^‚³‚ê‚Ä‚¢‚éó‘Ô‚ÅA‘Î‰žƒm[ƒh‚©‚çsshÚ‘±‚ðŽÀŽ{‚·‚éiŽŽŒ±Žè‡‚UDj
 
-â– å‰æ
+¡‘O’ñ
 
-ãƒ»å¯¾å‘ã‚µãƒ¼ãƒã¯è¨­å®šæ¸ˆã¿ã€‚
-ãƒ»SPPã§ä½¿ç”¨ã™ã‚‹NICã¯DPDKãƒã‚¤ãƒ³ãƒ‰æ¸ˆã¿ã€‚
+E‘ÎŒüƒT[ƒo‚ÍÝ’èÏ‚ÝB
+        # SPP-VM‚Æ’ÊM‚·‚éIF‚ðUP
+        sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
+        sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
 
-â– ç’°å¢ƒæº–å‚™
+        # SPP-VM‚Æ’ÊM‚·‚éIF‚ÌƒIƒtƒ[ƒh‹@”\‚ðOFF
+        sudo ethtool -K enp4s0f0 tx off
+        sudo ethtool -K enp5s0f0 tx off
 
-â—‹ï¼‘ï¼Žç’°å¢ƒå¤‰æ•°è¨­å®š
+ESPP‚ÅŽg—p‚·‚éNIC‚ÍDPDKƒoƒCƒ“ƒhÏ‚ÝB
+        # ŠÂ‹«•Ï”Ý’è
+        export RTE_SDK=$SPRINT_REVIEW_HOME/dpdk-17.05
+
+        # igb_uio.ko‚Ìƒ[ƒh
+        sudo modprobe uio
+        sudo insmod ${RTE_SDK}/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
+        lsmod | grep uio
+
+        # NIC‚ÌƒoƒCƒ“ƒh
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --status
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=igb_uio 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=igb_uio 0000:05:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --status
+
+¡ŠÂ‹«€”õ
+
+›‚PDŠÂ‹«•Ï”Ý’è
 
         export SPRINT_REVIEW_HOME=/home/operad/sprint_review/sprint5
         export RTE_SDK=$SPRINT_REVIEW_HOME/dpdk-17.05
@@ -30,111 +51,91 @@
         cd $SPP_HOME
 
 
-â—‹ï¼’ï¼Žå„ãƒ—ãƒ­ã‚»ã‚¹èµ·å‹•ã€‚
+›‚QDŠeƒvƒƒZƒX‹N“®B
 
-        å„ãƒ—ãƒ­ã‚»ã‚¹ã¯ç«¯æœ«ã‚’å æœ‰ã™ã‚‹ãŸã‚ã€å„ã€…ã§ç«¯æœ«ã‚’èµ·å‹•ã™ã‚‹ã“ã¨ã€‚
+        ŠeƒvƒƒZƒX‚Í’[––‚ðè—L‚·‚é‚½‚ßAŠeX‚Å’[––‚ð‹N“®‚·‚é‚±‚ÆB
 
-        # SPP ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©èµ·å‹•
+        # SPP ƒRƒ“ƒgƒ[ƒ‰‹N“®
         sudo python ./src/spp.py -p 5555 -s 6666
 
-        # SPP ãƒ—ãƒ©ã‚¤ãƒžãƒªèµ·å‹•
+        # SPP ƒvƒ‰ƒCƒ}ƒŠ‹N“®
         sudo ./src/primary/x86_64-native-linuxapp-gcc/spp_primary -c 0x02 -n 4 --socket-mem 512,512 --huge-dir=/run/hugepages/kvm --proc-type=primary -- -p 0x03 -n 8 -s 127.0.0.1:5555
 
-        # SPP-AGENTç–‘ä¼¼ ncèµ·å‹•â‘ 
+        # SPP-AGENT‹^Ž— nc‹N“®‡@
         while true; do nc -l 11111; done
 
-        # SPP ã‚»ã‚«ãƒ³ãƒ€ãƒªèµ·å‹•â‘ 
+        # SPP ƒZƒJƒ“ƒ_ƒŠ‹N“®‡@
         sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x00fd -n 4 --proc-type=secondary -- --process-id 1 --config $SPRINT_REVIEW_HOME/spp_vf1_without_cmtab.json -s 127.0.0.1:11111
 
-        # SPP-AGENTç–‘ä¼¼ ncèµ·å‹•â‘¡
+        # SPP-AGENT‹^Ž— nc‹N“®‡A
         while true; do nc -l 11112; done
 
-        # SPP ã‚»ã‚«ãƒ³ãƒ€ãƒªèµ·å‹•â‘¡
+        # SPP ƒZƒJƒ“ƒ_ƒŠ‹N“®‡A
         sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf -c 0x3f01 -n 4 --proc-type=secondary -- --process-id 2 --config $SPRINT_REVIEW_HOME/spp_vf2_without_cmtab.json -s 127.0.0.1:11112
 
 
-â—‹ï¼“ï¼ŽSPP VMèµ·å‹•
+›‚RDSPP VM‹N“®
 
         virsh start spp-vm1
         virsh start spp-vm2
 
 
-â—‹ï¼”ï¼ŽSPP VM1è¨­å®š
+›‚SDSPP VM1Ý’è
 
         ssh -oStrictHostKeyChecking=no ntt@192.168.122.31
 
-        # vhostã¨æŽ¥ç¶šã™ã‚‹IFã‚’UP
+        # vhost‚ÆÚ‘±‚·‚éIF‚ðUP
         sudo ifconfig ens4 inet 192.168.240.21 netmask 255.255.255.0 up
         sudo ifconfig ens5 inet 192.168.250.22 netmask 255.255.255.0 up
 
-        # å¯¾å‘ã‚µãƒ¼ãƒã®IPã‚¢ãƒ‰ãƒ¬ã‚¹ï¼MACã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ARPãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²
-        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
-        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
-
-        # vhostã¨æŽ¥ç¶šã™ã‚‹IFã®ã‚ªãƒ•ãƒ­ãƒ¼ãƒ‰æ©Ÿèƒ½ã‚’OFF
+        # vhost‚ÆÚ‘±‚·‚éIF‚ÌƒIƒtƒ[ƒh‹@”\‚ðOFF
         sudo ethtool -K ens4 tx off
         sudo ethtool -K ens5 tx off
 
 
-â—‹ï¼•ï¼ŽSPP VM2è¨­å®š
+›‚TDSPP VM2Ý’è
 
         ssh -oStrictHostKeyChecking=no ntt@192.168.122.32
 
-        # vhostã¨æŽ¥ç¶šã™ã‚‹IFã‚’UP
+        # vhost‚ÆÚ‘±‚·‚éIF‚ðUP
         sudo ifconfig ens4 inet 192.168.240.31 netmask 255.255.255.0 up
         sudo ifconfig ens5 inet 192.168.250.32 netmask 255.255.255.0 up
 
-        # å¯¾å‘ã‚µãƒ¼ãƒã®IPã‚¢ãƒ‰ãƒ¬ã‚¹ï¼MACã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ARPãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²
-        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
-        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
-
-        # vhostã¨æŽ¥ç¶šã™ã‚‹IFã®ã‚ªãƒ•ãƒ­ãƒ¼ãƒ‰æ©Ÿèƒ½ã‚’OFF
+        # vhost‚ÆÚ‘±‚·‚éIF‚ÌƒIƒtƒ[ƒh‹@”\‚ðOFF
         sudo ethtool -K ens4 tx off
         sudo ethtool -K ens5 tx off
 
 
-â– è©¦é¨“æ‰‹é †
+¡ŽŽŒ±Žè‡
 
-â—‹ï¼‘ï¼ŽæŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹æœªç™»éŒ²ã®å‹•ä½œç¢ºèª
+›‚PDU•ªMACƒAƒhƒŒƒX–¢“o˜^‚Ì“®ìŠm”F
 
 
-        SSHæŽ¥ç¶šãŒæˆåŠŸã—ãªã„ã“ã¨ã‚’ç¢ºèªã€‚
-        æŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹æœªç™»éŒ²ã®ãŸã‚ã€SPPã‚»ã‚«ãƒ³ãƒ€ãƒªã«ã¦ãƒ‘ã‚±ãƒƒãƒˆã¯ç ´æ£„ã•ã‚Œã‚‹ã€‚
-        â€»SPPã‚»ã‚«ãƒ³ãƒ€ãƒªã®æ¨™æº–å‡ºåŠ›ã«å‡ºåŠ›ã‚ã‚Šã€‚
+        SSHÚ‘±‚ª¬Œ÷‚µ‚È‚¢‚±‚Æ‚ðŠm”FB
+        U•ªMACƒAƒhƒŒƒX–¢“o˜^‚Ì‚½‚ßASPPƒZƒJƒ“ƒ_ƒŠ‚É‚ÄƒpƒPƒbƒg‚Í”jŠü‚³‚ê‚éB
+        ¦SPPƒZƒJƒ“ƒ_ƒŠ‚Ì•W€o—Í‚Éo—Í‚ ‚èB
 
-        ï¼ å¯¾å‘ã‚µãƒ¼ãƒ
+        —‘ÎŒüƒT[ƒo
 
-        # SPP-VM1ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM1‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.240.21
 
-        # SPP-VM1ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM1‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.250.22
 
-        # SPP-VM2ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM2‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.240.31
 
-        # SPP-VM2ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM2‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.250.32
 
 
-â—‹ï¼’ï¼Žã‚³ãƒžãƒ³ãƒ‰ã«ã‚ˆã‚‹ãƒ—ãƒ­ã‚»ã‚¹ç•ªå·å–å¾—
+›‚QDƒRƒ}ƒ“ƒh‚É‚æ‚éƒvƒƒZƒX”Ô†Žæ“¾
 
-        ï¼ SPPãƒ›ã‚¹ãƒˆ
+        —SPPƒzƒXƒg
 
-        nc1ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
-
-        {
-          "commands": [
-            {
-              "command": "process"
-            }
-          ]
-        }
-
-
-        nc2ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
+        nc1‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
         {
           "commands": [
@@ -145,12 +146,24 @@
         }
 
 
-â—‹ï¼“ï¼ŽæŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ç™»éŒ²
+        nc2‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
-        ï¼ SPPãƒ›ã‚¹ãƒˆ
+        {
+          "commands": [
+            {
+              "command": "process"
+            }
+          ]
+        }
 
-        nc1ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
+
+›‚RDU•ªMACƒAƒhƒŒƒX“o˜^
+
+        —SPPƒzƒXƒg
+
+        nc1‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
         {
           "commands": [
@@ -173,8 +186,8 @@
         }
 
 
-        nc2ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
+        nc2‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
         {
           "commands": [
@@ -191,33 +204,33 @@
         }
 
 
-â—‹ï¼”ï¼ŽæŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ç™»éŒ²å¾Œã®å‹•ä½œç¢ºèª
+›‚SDU•ªMACƒAƒhƒŒƒX“o˜^Œã‚Ì“®ìŠm”F
 
-        SSHæŽ¥ç¶šãŒæˆåŠŸã™ã‚‹ã“ã¨ã‚’ç¢ºèªã€‚
+        SSHÚ‘±‚ª¬Œ÷‚·‚é‚±‚Æ‚ðŠm”FB
 
-        ï¼ å¯¾å‘ã‚µãƒ¼ãƒ
+        —‘ÎŒüƒT[ƒo
 
-        # SPP-VM1ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM1‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.240.21
 
-        # SPP-VM1ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM1‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.250.22
 
-        # SPP-VM2ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM2‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.240.31
 
-        # SPP-VM2ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
+        # SPP-VM2‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
         ssh ntt@192.168.250.32
 
 
-â—‹ï¼•ï¼ŽæŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ä¸€éƒ¨è§£é™¤
+›‚TDU•ªMACƒAƒhƒŒƒXˆê•”‰ðœ
 
-        SPP-VM1,2ã®ãã‚Œãžã‚Œç‰‡æ–¹ã‚’è§£é™¤ã€‚
+        SPP-VM1,2‚Ì‚»‚ê‚¼‚ê•Ð•û‚ð‰ðœB
 
-        ï¼ SPPãƒ›ã‚¹ãƒˆ
+        —SPPƒzƒXƒg
 
-        nc1ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
+        nc1‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
         {
           "commands": [
@@ -234,8 +247,8 @@
         }
 
 
-        nc2ã‚ˆã‚Šä»¥ä¸‹ã®ã‚³ãƒžãƒ³ãƒ‰ç™ºè¡Œã€‚
-        â€»æ”¹è¡Œã‚’å…¥åŠ›ã—ãªã„ã¨ncã¯é€ä¿¡ã—ã¾ã›ã‚“ã€‚
+        nc2‚æ‚èˆÈ‰º‚ÌƒRƒ}ƒ“ƒh”­sB
+        ¦‰üs‚ð“ü—Í‚µ‚È‚¢‚Ænc‚Í‘—M‚µ‚Ü‚¹‚ñB
 
         {
           "commands": [
@@ -252,45 +265,42 @@
         }
 
 
-â—‹ï¼–ï¼ŽæŒ¯åˆ†MACã‚¢ãƒ‰ãƒ¬ã‚¹ä¸€éƒ¨è§£é™¤å¾Œã®å‹•ä½œç¢ºèª
+›‚UDU•ªMACƒAƒhƒŒƒXˆê•”‰ðœŒã‚Ì“®ìŠm”F
 
-        SSHæŽ¥ç¶šãŒæˆåŠŸã™ã‚‹ã“ã¨ã‚’ç¢ºèªã€‚
+        SSHÚ‘±‚ª¬Œ÷‚·‚é‚±‚Æ‚ðŠm”FB
 
-        ï¼ å¯¾å‘ã‚µãƒ¼ãƒ
+        —‘ÎŒüƒT[ƒo
 
-        # SPP-VM1ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
-        # æŽ¥ç¶šå¯èƒ½
+        # SPP-VM1‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
+        # Ú‘±‰Â”\
         ssh ntt@192.168.240.21
 
-        # SPP-VM1ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
-        # æŽ¥ç¶šä¸å¯
+        # SPP-VM1‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
+        # Ú‘±•s‰Â
         ssh ntt@192.168.250.22
 
-        # SPP-VM2ã¸pNIC0çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
-        # æŽ¥ç¶šä¸å¯
+        # SPP-VM2‚ÖpNIC0Œo—R‚ÅSSHƒƒOƒCƒ“
+        # Ú‘±•s‰Â
         ssh ntt@192.168.240.31
 
-        # SPP-VM2ã¸pNIC1çµŒç”±ã§SSHãƒ­ã‚°ã‚¤ãƒ³
-        # æŽ¥ç¶šå¯èƒ½
+        # SPP-VM2‚ÖpNIC1Œo—R‚ÅSSHƒƒOƒCƒ“
+        # Ú‘±‰Â”\
         ssh ntt@192.168.250.32
 
 
-â– å‚è€ƒãƒ»å¯¾å‘
-
-        # SPP-VMã¨é€šä¿¡ã™ã‚‹IFã‚’UP
-        sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
-        sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
-
-        # SPP-VMã®IPã‚¢ãƒ‰ãƒ¬ã‚¹ï¼MACã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ARPãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²
-        sudo arp -s 192.168.240.21 52:54:00:12:34:56 -i enp4s0f0
-        sudo arp -s 192.168.240.31 52:54:00:12:34:58 -i enp4s0f0
-        sudo arp -s 192.168.250.22 52:54:00:12:34:57 -i enp5s0f0
-        sudo arp -s 192.168.250.32 52:54:00:12:34:59 -i enp5s0f0
-
-        # SPP-VMã¨é€šä¿¡ã™ã‚‹IFã®ã‚ªãƒ•ãƒ­ãƒ¼ãƒ‰æ©Ÿèƒ½ã‚’OFF
-        sudo ethtool -K enp4s0f0 tx off
-        sudo ethtool -K enp5s0f0 tx off
-
-
+¡ŽQlE‘ÎŒü
+EVM‚Ì’âŽ~Žè‡
         virsh shutdown spp-vm1
         virsh shutdown spp-vm2
+
+EƒoƒCƒ“ƒh‰ðœŽè‡
+        # NIC‚ÌƒoƒCƒ“ƒh‰ðœ
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --unbind 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=ixgbe 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --unbind 0000:05:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=ixgbe 0000:05:00.0
+
+        # igb_uio.ko‚ÌƒAƒ“ƒ[ƒh
+        sudo /sbin/lsmod | grep -s igb_uio > /dev/null
+        sudo /sbin/rmmod igb_uio
+        lsmod | grep uio
