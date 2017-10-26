@@ -1825,16 +1825,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="387.41797"
+     inkscape:cx="-70.466635"
      inkscape:cy="186.07323"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer4"
      showgrid="false"
-     inkscape:window-width="1201"
-     inkscape:window-height="779"
-     inkscape:window-x="120"
-     inkscape:window-y="103"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1366"
+     inkscape:window-height="664"
+     inkscape:window-x="-8"
+     inkscape:window-y="1016"
+     inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -1849,7 +1849,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -2248,24 +2248,24 @@
          x="114.48937"
          y="115.23184">vNIC2</tspan></text>
     <rect
-       style="display:inline;fill:#ffd5d5;stroke:#000000;stroke-width:0.10750541;stroke-miterlimit:4;stroke-dasharray:none"
+       style="display:inline;fill:#ffd5d5;stroke:#000000;stroke-width:0.120654;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect4404-9-5"
-       width="13.308651"
-       height="32.38496"
-       x="-18.864912"
-       y="89.44883"
-       ry="2.1980596" />
+       width="16.770006"
+       height="32.371811"
+       x="-20.445839"
+       y="89.455406"
+       ry="2.1971672" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70416667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:middle;display:inline;opacity:0.98999999;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.21267372;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70416668px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:middle;display:inline;opacity:0.98999999;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.21267372;"
        x="-13.677567"
        y="97.412262"
        id="text1773-6-6-5-2-58-9-7"
        transform="scale(0.93214045,1.0727997)"><tspan
          sodipodi:role="line"
-         id="tspan32590">ssh</tspan><tspan
+         id="tspan1763">ssh </tspan><tspan
          sodipodi:role="line"
-         id="tspan32592">client</tspan></text>
+         id="tspan1765">client</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.241;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1654)"
        d="M -15.835612,89.669972 C -12.488463,79.248516 -3.440033,74.972204 -3.440033,74.972204"
