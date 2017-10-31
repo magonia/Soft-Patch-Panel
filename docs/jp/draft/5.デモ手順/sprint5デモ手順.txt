@@ -17,7 +17,28 @@
 ■前提
 
 ・対向サーバは設定済み。
+        # SPP-VMと通信するIFをUP
+        sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
+        sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
+
+        # SPP-VMと通信するIFのオフロード機能をOFF
+        sudo ethtool -K enp4s0f0 tx off
+        sudo ethtool -K enp5s0f0 tx off
+
 ・SPPで使用するNICはDPDKバインド済み。
+        # 環境変数設定
+        export RTE_SDK=$SPRINT_REVIEW_HOME/dpdk-17.05
+
+        # igb_uio.koのロード
+        sudo modprobe uio
+        sudo insmod ${RTE_SDK}/x86_64-native-linuxapp-gcc/kmod/igb_uio.ko
+        lsmod | grep uio
+
+        # NICのバインド
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --status
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=igb_uio 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=igb_uio 0000:05:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --status
 
 ■環境準備
 
@@ -67,10 +88,6 @@
         sudo ifconfig ens4 inet 192.168.240.21 netmask 255.255.255.0 up
         sudo ifconfig ens5 inet 192.168.250.22 netmask 255.255.255.0 up
 
-        # 対向サーバのIPアドレス／MACアドレスをARPテーブルに登録
-        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
-        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
-
         # vhostと接続するIFのオフロード機能をOFF
         sudo ethtool -K ens4 tx off
         sudo ethtool -K ens5 tx off
@@ -83,10 +100,6 @@
         # vhostと接続するIFをUP
         sudo ifconfig ens4 inet 192.168.240.31 netmask 255.255.255.0 up
         sudo ifconfig ens5 inet 192.168.250.32 netmask 255.255.255.0 up
-
-        # 対向サーバのIPアドレス／MACアドレスをARPテーブルに登録
-        sudo arp -s 192.168.240.11 a0:36:9f:78:86:78 -i ens4
-        sudo arp -s 192.168.250.13 a0:36:9f:6c:ed:bc -i ens5
 
         # vhostと接続するIFのオフロード機能をOFF
         sudo ethtool -K ens4 tx off
@@ -276,21 +289,18 @@
 
 
 ■参考・対向
-
-        # SPP-VMと通信するIFをUP
-        sudo ifconfig enp4s0f0 inet 192.168.240.11 netmask 255.255.255.0 up
-        sudo ifconfig enp5s0f0 inet 192.168.250.13 netmask 255.255.255.0 up
-
-        # SPP-VMのIPアドレス／MACアドレスをARPテーブルに登録
-        sudo arp -s 192.168.240.21 52:54:00:12:34:56 -i enp4s0f0
-        sudo arp -s 192.168.240.31 52:54:00:12:34:58 -i enp4s0f0
-        sudo arp -s 192.168.250.22 52:54:00:12:34:57 -i enp5s0f0
-        sudo arp -s 192.168.250.32 52:54:00:12:34:59 -i enp5s0f0
-
-        # SPP-VMと通信するIFのオフロード機能をOFF
-        sudo ethtool -K enp4s0f0 tx off
-        sudo ethtool -K enp5s0f0 tx off
-
-
+・VMの停止手順
         virsh shutdown spp-vm1
         virsh shutdown spp-vm2
+
+・バインド解除手順
+        # NICのバインド解除
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --unbind 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=ixgbe 0000:04:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --unbind 0000:05:00.0
+        sudo ${RTE_SDK}/usertools/dpdk-devbind.py --bind=ixgbe 0000:05:00.0
+
+        # igb_uio.koのアンロード
+        sudo /sbin/lsmod | grep -s igb_uio > /dev/null
+        sudo /sbin/rmmod igb_uio
+        lsmod | grep uio
