@@ -113,7 +113,8 @@
 
         SSH接続が成功しないことを確認。
         振分MACアドレス未登録のため、SPPセカンダリにてパケットは破棄される。
-        ※SPPセカンダリの標準出力に出力あり。
+        ※syslogとSPPセカンダリの標準出力に下記のログ出力あり。
+        SPP_CLASSIFIER_MAC: unknown mac address. ret=-2, mac_addr=<MACアドレス>
 
         ＠対向サーバ
 
