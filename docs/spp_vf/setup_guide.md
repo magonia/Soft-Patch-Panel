@@ -3,8 +3,8 @@
 ## Environment
 
 * Ubuntu 16.04
-* qemu-kvm
-* DPDK v17.05
+* qemu-kvm 2.7 or later
+* DPDK v17.05 or later
 
 ## Setting
 
@@ -37,6 +37,11 @@ Change grub config for hugepages and isolcpus.
 GRUB_CMDLINE_LINUX_DEFAULT="isolcpus=2,4,6,8,10,12-18,20,22,24,26-42,44,46 hugepagesz=1G hugepages=36 default_hugepagesz=1G"
 ```
 
+For hugepages, isolcpus, refer to the dpdk documentation below.
+* [Use of Hugepages in the Linux Environment](http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#running-dpdk-applications)
+* [Using Linux Core Isolation to Reduce Context Switches](http://dpdk.org/doc/guides/linux_gsg/enable_func.html#using-linux-core-isolation-to-reduce-context-switches)
+* [Linux boot command line](http://dpdk.org/doc/guides/linux_gsg/nic_perf_intel_platform.html#linux-boot-command-line)
+
 You need to run `update-grub` and reboot to activate grub config.
 
 ```sh
@@ -68,55 +73,21 @@ Finally, you unmount default hugepage.
 $ sudo unmount /dev/hugepages
 ```
 
-#### Install jasson
+#### Install jansson
 
 Network configuration is defined in JSON and `spp_vf` reads config from
 the file while launching.
 [jasson](http://www.digip.org/jansson/) is a JSON library written in C.
 
-It is required to use `json_path` feature of `jasson` for `spp_vf`.
-It has develped under `json_path` branch and you need to checkout and compile
-it manually.
+Install the -dev package.
 
 ```sh
-$ git clone https://github.com/rogerz/jansson
-$ cd jansson
-$ sudo git checkout json_path
-Branch json_path set up to track remote branch json_path from origin. Switched to a new branch 'json_path'
-```
-
-This setup guide expects that `jasson` is placed as `/opt/jasson`.
-
-```sh
-$ sudo mkdir -p /opt/jansson
-$ sudo mv jansson /opt/jansson
-```
-
-Compile it as following.
-
-```sh
-$ cd /opt/jansson/jansson
-$ sudo autoreconf -i
-$ sudo ./configure
-$ sudo make
-$ sudo make install
-$ sudo ldconfig
-```
-
-Then, confirm that header files of jasson are generated in `/usr/local/include`.
-
-```sh
-$ ls -al /usr/local/include
-total 24
-drwxr-xr-x  2 root root 4096 Jul 28 16:45 .
-drwxr-xr-x 10 root root 4096 May 27 10:23 ..
--rw-r--r--  1 root root 1183 Jul 28 16:45 jansson_config.h
--rw-r--r--  1 root root 9499 Jul 28 16:45 jansson.h
+$ sudo apt-get install libjansson-dev
 ```
 
 #### Install DPDK
 
-Install DPDK v17.05 in any directory. This is a simple instruction and please refer
+Install DPDK in any directory. This is a simple instruction and please refer
 [Getting Started Guide for Linux](http://dpdk.org/doc/guides/linux_gsg/index.html)
 for details.
 
@@ -124,7 +95,7 @@ for details.
 $ cd /path/to/any_dir
 $ git clone http://dpdk.org/git/dpdk
 $ cd dpdk
-$ git checkout v17.05
+$ git checkout [TAG_NAME(e.g. v17.05)]
 $ export RTE_SDK=`pwd`
 $ export RTE_TARGET=x86_64-native-linuxapp-gcc
 $ make T=x86_64-native-linuxapp-gcc install
@@ -239,15 +210,15 @@ $ virsh edit [VM_NAME]
 	    <qemu:arg value='node,memdev=mem'/>
 	    <qemu:arg value='-mem-prealloc'/>
 	    <qemu:arg value='-chardev'/>
-	    <qemu:arg value='socket,id=chr0,path=/tmp/sock0'/>
+	    <qemu:arg value='socket,id=chr0,path=/tmp/sock0,server'/>
 	    <qemu:arg value='-device'/>
-	    <qemu:arg value='virtio-net-pci,netdev=vhost-net0'/>
+	    <qemu:arg value='virtio-net-pci,netdev=vhost-net0,mac=52:54:00:12:34:56'/>
 	    <qemu:arg value='-netdev'/>
 	    <qemu:arg value='vhost-user,id=vhost-net0,chardev=chr0,vhostforce'/>
 	    <qemu:arg value='-chardev'/>
-	    <qemu:arg value='socket,id=chr1,path=/tmp/sock1'/>
+	    <qemu:arg value='socket,id=chr1,path=/tmp/sock1,server'/>
 	    <qemu:arg value='-device'/>
-	    <qemu:arg value='virtio-net-pci,netdev=vhost-net1'/>
+	    <qemu:arg value='virtio-net-pci,netdev=vhost-net1,mac=52:54:00:12:34:57'/>
 	    <qemu:arg value='-netdev'/>
 	    <qemu:arg value='vhost-user,id=vhost-net1,chardev=chr1,vhostforce'/>
 	  </qemu:commandline>

@@ -9,8 +9,8 @@ SPP_VF is a SR-IOV like network functionality for NFV.
 ## Environment
 
 * Ubuntu 16.04
-* qemu-kvm
-* DPDK v17.05
+* qemu-kvm 2.7 or later
+* DPDK v17.05 or later
 
 ## Launch SPP
 
@@ -21,13 +21,18 @@ Before launching spp, you need to setup described as [setup guide](setup_guide.m
 First, run SPP Controller with port numbers for spp primary and secondary.
 
 ```sh
-$ python ./src/spp.py -p 5555 -s 6666
+$ python ./src/spp_vf.py -p 5555 -s 6666
 ```
 
 ### SPP Primary
 
 SPP primary reserves and manages resources for secondary processes.
 You have to run it before secondaries.
+
+SPP primary has two kinds of options, dpdk and spp.
+Option of dpdk is before `--`, option of spp is after `--`.
+
+Option of dpdk are refer to [dpdk documentation](http://dpdk.org/doc/guides/linux_gsg/build_sample_apps.html#running-a-sample-application).
 
 Options of spp primary are
   * -p : port mask
@@ -45,14 +50,37 @@ $ sudo ./src/primary/x86_64-native-linuxapp-gcc/spp_primary \
 ### SPP Secondary
 
 In `spp_vf`, spp secondary processes are launched by single command.
+
+`spp_vf` has two kinds of options as well as spp primary.
+
+Option of dpdk are refer to [dpdk documentation](http://dpdk.org/doc/guides/linux_gsg/build_sample_apps.html#running-a-sample-application).
+
+Options of `spp_vf` are
+  * --client-id    : client id
+  * --config       : config file path
+  * -s             : Port for ip addr and spp secondary
+  * --vhost-client : vhost-user client enable setting
+
 Core assingment and network configuration are defined
 in JSON formatted config file.
 If you run `spp_vf` without giving config file, it refers default
-config file (test/spp_config/spp_config/vf.json).
+config file (/usr/local/etc/spp/spp.json).
 
 ```sh
 $ sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf \
--c 0x3ffd -n 4 --proc-type=secondary
+-c 0x3ffd -n 4 --proc-type=secondary \
+-- --client-id 1 -s 127.0.0.1:6666 --vhost-client
+```
+
+`--vhost-client` option is used when SPP is a client of vhost-user.
+By choosing not to use `--vhost-client` option,
+It may be possible to use SPP even in qemu (before 2.7 version)
+which can not be used as a vhost-user server.
+
+```sh
+$ sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf \
+-c 0x3ffd -n 4 --proc-type=secondary \
+-- --client-id 1 -s 127.0.0.1:6666
 ```
 
 You can also indicate which of config you use explicitly with
@@ -65,10 +93,11 @@ defined in each of config files.
 ```sh
 $ sudo ./src/vf/x86_64-native-linuxapp-gcc/spp_vf \
 -c 0x3ffd -n 4 --proc-type=secondary \
--- --config /path/to/config/spp_vf1.json
+-- --client-id 1 --config /path/to/config/spp_vf1.json \
+-s 127.0.0.1:6666 --vhost-client
 ```
 
-### SPP VM
+### VM
 
 Launch VMs with `virsh` command.
 
@@ -79,16 +108,13 @@ $ virsh start [VM]
 ### Additional Network Configurations
 
 To enable processes running on the VM to communicate through spp,
-it is required additional network configurations on host and guest VMss.
+it is required additional network configurations on host and guest VMs.
 
-#### Host1
+#### Guest VMs 
 
 ```sh
 # Interface for vhost
 $ sudo ifconfig [IF_NAME] inet [IP_ADDR] netmask [NETMASK] up
-
-# Register host2 to arp table
-$ sudo arp -s [IP_ADDR] [MAC_ADDR] -i [IF_NAME]
 
 # Disable offload for vhost interface
 $ sudo ethtool -K [IF_NAME] tx off
@@ -97,9 +123,6 @@ $ sudo ethtool -K [IF_NAME] tx off
 #### Host2
 
 ```sh
-# Register VM to arp table
-$ sudo arp -s [IP_ADDR] [MAC_ADDR] -i [IF_NAME]
-
 # Disable offload for VM interface
 $ ethtool -K [IF_NAME] tx off
 ```
