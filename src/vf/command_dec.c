@@ -116,22 +116,22 @@ decode_mac_addr_str_value(void *output, const char *arg_val)
 static int
 decode_classifier_type_value(void *output, const char *arg_val)
 {
-        int ret = 0;
+	int ret = 0;
 	ret = get_arrary_index(arg_val, CLASSIFILER_TYPE_STRINGS);
-        if (unlikely(ret <= 0)) {
-                RTE_LOG(ERR, SPP_COMMAND_PROC, "Unknown classifier type. val=%s\n", arg_val);
-                return -1;
-        }
+	if (unlikely(ret <= 0)) {
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Unknown classifier type. val=%s\n", arg_val);
+		return -1;
+	}
 
-        *(int *)output = ret;
-        return 0;
+	*(int *)output = ret;
+	return 0;
 }
 
 /* decode procedure for classifier value */
 static int
 decode_classifier_value_value(void *output, const char *arg_val)
 {
-        int ret = -1;
+	int ret = -1;
 	struct spp_command_classifier_table *classifier_table = output;
 	switch(classifier_table->type) {
 		case SPP_CLASSIFIER_TYPE_MAC:
@@ -140,7 +140,7 @@ decode_classifier_value_value(void *output, const char *arg_val)
 		default:
 			break;
 	}
-        return ret;
+	return ret;
 }
 
 /* decode procedure for classifier port */
@@ -149,11 +149,11 @@ decode_classifier_port_value(void *output, const char *arg_val)
 {
 	struct spp_config_port_info *port = output;
 
-        if (strcmp(arg_val, SPP_CMD_UNUSE) == 0) {
-                port->if_type = UNDEF;
-                port->if_no = 0;
-                return 0;
-        }
+	if (strcmp(arg_val, SPP_CMD_UNUSE) == 0) {
+		port->if_type = UNDEF;
+		port->if_no = 0;
+		return 0;
+	}
 
 	return decode_port_value(port, arg_val);
 }
@@ -162,9 +162,9 @@ decode_classifier_port_value(void *output, const char *arg_val)
 
 /* parameter list for decoding */
 struct decode_parameter_list {
-        const char *name;
-        size_t offset;
-        int (*func)(void *output, const char *arg_val);
+	const char *name;
+	size_t offset;
+	int (*func)(void *output, const char *arg_val);
 };
 
 /* parameter list for each command */
