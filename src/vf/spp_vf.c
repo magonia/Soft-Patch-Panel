@@ -947,6 +947,7 @@ ut_main(int argc, char *argv[])
 		}
 
 		if (unlikely(ret_do != 0)) {
+			set_core_status(SPP_CORE_STOP_REQUEST);
 			break;
 		}
 

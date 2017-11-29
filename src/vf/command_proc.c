@@ -416,7 +416,7 @@ process_request(int *sock, const char *request_str, size_t request_str_len)
 		/* send error response */
 		send_decode_error_response(sock, &request, &decode_error);
 		RTE_LOG(DEBUG, SPP_COMMAND_PROC, "End command request processing.\n");
-		return ret;
+		return 0;
 	}
 
 	RTE_LOG(DEBUG, SPP_COMMAND_PROC, "Command request is valid. "
@@ -436,6 +436,13 @@ process_request(int *sock, const char *request_str, size_t request_str_len)
 		}
 
 		command_results[i].code = CRES_SUCCESS;
+	}
+
+	if (request.is_requested_exit) {
+		/* Terminated by process exit command.                       */
+		/* Other route is normal end because it responds to command. */
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "No response with process exit command.");
+		return -1;
 	}
 
 	/* send response */
@@ -489,5 +496,5 @@ spp_command_proc_do(void)
 	ret = process_request(&sock, msgbuf, msg_ret);
 	spp_strbuf_remove_front(msgbuf, msg_ret);
 
-	return 0;
+	return ret;
 }

@@ -190,6 +190,7 @@ static struct decode_parameter_list parameter_list[][SPP_CMD_MAX_PARAMETERS] = {
 	{ DECODE_PARAMETER_LIST_EMPTY }, /* flush            */
 	{ DECODE_PARAMETER_LIST_EMPTY }, /* _get_client_id   */
 	{ DECODE_PARAMETER_LIST_EMPTY }, /* status           */
+	{ DECODE_PARAMETER_LIST_EMPTY }, /* exit             */
 	{ DECODE_PARAMETER_LIST_EMPTY }, /* termination      */
 };
 
@@ -231,6 +232,7 @@ static struct decode_command_list command_list[] = {
 	{ "flush",            1, 1, NULL                            }, /* flush            */
 	{ "_get_client_id",   1, 1, NULL                            }, /* _get_client_id   */
 	{ "status",           1, 1, NULL                            }, /* status           */
+	{ "exit",             1, 1, NULL                            }, /* exit             */
 	{ "",                 0, 0, NULL                            }  /* termination      */
 };
 
@@ -309,6 +311,9 @@ spp_command_decode_request(struct spp_command_request *request, const char *requ
 			break;
 		case SPP_CMDTYPE_STATUS:
 			request->is_requested_status = 1;
+			break;
+		case SPP_CMDTYPE_EXIT:
+			request->is_requested_exit = 1;
 			break;
 		default:
 			/* nothing to do */

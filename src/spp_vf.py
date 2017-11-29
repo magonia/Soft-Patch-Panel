@@ -228,8 +228,6 @@ def primarythread(sock, main2primary, primary2main):
 def close_all_secondary():
     """Exit all secondary processes"""
 
-    return;
-
     global SECONDARY_COUNT
 
     tmp_list = []

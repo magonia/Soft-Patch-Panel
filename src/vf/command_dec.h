@@ -36,6 +36,7 @@ enum spp_command_type {
 	SPP_CMDTYPE_FLUSH,
 	SPP_CMDTYPE_CLIENT_ID,
 	SPP_CMDTYPE_STATUS,
+	SPP_CMDTYPE_EXIT,
 };
 
 #if 0 /* not supported yet */
@@ -90,6 +91,7 @@ struct spp_command_request {
 
 	int is_requested_client_id;
 	int is_requested_status;
+	int is_requested_exit;
 };
 
 /* decode error information */
