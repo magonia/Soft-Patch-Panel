@@ -346,7 +346,27 @@ decode_mac_addr_str_value(void *output, const char *arg_val)
 	return 0;
 }
 
-/* decoding procedure of classifier type */
+/* decoding procedure of action for classifier_table command */
+static int
+decode_classifier_action_value(void *output, const char *arg_val)
+{
+	int ret = 0;
+	ret = get_arrary_index(arg_val, COMMAND_ACTION_STRINGS);
+	if (unlikely(ret <= 0)) {
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Unknown port action. val=%s\n", arg_val);
+		return -1;
+	}
+
+	if (unlikely(ret != SPP_CMD_ACTION_ADD) && unlikely(ret != SPP_CMD_ACTION_DEL)) {
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Unknown port action. val=%s\n", arg_val);
+		return -1;
+	}
+
+	*(int *)output = ret;
+	return 0;
+}
+
+/* decoding procedure of type for classifier_table command */
 static int
 decode_classifier_type_value(void *output, const char *arg_val)
 {
@@ -361,7 +381,7 @@ decode_classifier_type_value(void *output, const char *arg_val)
 	return 0;
 }
 
-/* decode procedure for classifier value */
+/* decoding procedure of value for classifier_table command */
 static int
 decode_classifier_value_value(void *output, const char *arg_val)
 {
@@ -377,19 +397,47 @@ decode_classifier_value_value(void *output, const char *arg_val)
 	return ret;
 }
 
-/* decode procedure for classifier port */
+/* decoding procedure of port for classifier_table command */
 static int
 decode_classifier_port_value(void *output, const char *arg_val)
 {
-	struct spp_port_index *port = output;
+	int ret = 0;
+	struct spp_command_classifier_table *classifier_table = output;
+	struct spp_port_index tmp_port;
+	int64_t mac_addr = 0;
 
-	if (strcmp(arg_val, SPP_CMD_UNUSE) == 0) {
-		port->if_type = UNDEF;
-		port->if_no = 0;
-		return 0;
+	ret = decode_port_value(&tmp_port, arg_val);
+	if (ret < 0)
+		return -1;
+
+	if (spp_check_added_port(tmp_port.if_type, tmp_port.if_no) == 0) {
+		RTE_LOG(ERR, SPP_COMMAND_PROC, "Port not added. val=%s\n", arg_val);
+		return -1;
 	}
 
-	return decode_port_value(port, arg_val);
+	if (unlikely(classifier_table->action == SPP_CMD_ACTION_ADD)) {
+		if (!spp_check_mac_used_port(0, tmp_port.if_type, tmp_port.if_no)) {
+			RTE_LOG(ERR, SPP_COMMAND_PROC,
+					"Port in used. (classifier_table command) val=%s\n",
+					arg_val);
+			return -1;
+		}
+	} else if (unlikely(classifier_table->action == SPP_CMD_ACTION_DEL)) {
+		mac_addr = spp_change_mac_str_to_int64(classifier_table->value);
+		if (mac_addr < 0)
+			return -1;
+
+		if (!spp_check_mac_used_port((uint64_t)mac_addr, tmp_port.if_type, tmp_port.if_no)) {
+			RTE_LOG(ERR, SPP_COMMAND_PROC,
+					"Port in used. (classifier_table command) val=%s\n",
+					arg_val);
+			return -1;
+		}
+	}
+
+	classifier_table->port.if_type = tmp_port.if_type;
+	classifier_table->port.if_no   = tmp_port.if_no;
+	return 0;
 }
 
 #define DECODE_PARAMETER_LIST_EMPTY { NULL, 0, NULL }
@@ -405,6 +453,11 @@ struct decode_parameter_list {
 static struct decode_parameter_list parameter_list[][SPP_CMD_MAX_PARAMETERS] = {
 	{                                /* classifier_table */
 		{
+			.name = "action",
+			.offset = offsetof(struct spp_command, spec.classifier_table.action),
+			.func = decode_classifier_action_value
+		},
+		{
 			.name = "type",
 			.offset = offsetof(struct spp_command, spec.classifier_table.type),
 			.func = decode_classifier_type_value
@@ -416,7 +469,7 @@ static struct decode_parameter_list parameter_list[][SPP_CMD_MAX_PARAMETERS] = {
 		},
 		{
 			.name = "port",
-			.offset = offsetof(struct spp_command, spec.classifier_table.port),
+			.offset = offsetof(struct spp_command, spec.classifier_table),
 			.func = decode_classifier_port_value
 		},
 		DECODE_PARAMETER_LIST_EMPTY,
@@ -508,7 +561,7 @@ struct decode_command_list {
 
 /* command list */
 static struct decode_command_list command_list[] = {
-	{ "classifier_table", 4, 4, decode_comand_parameter_in_list }, /* classifier_table */
+	{ "classifier_table", 5, 5, decode_comand_parameter_in_list }, /* classifier_table */
 	{ "flush",            1, 1, NULL                            }, /* flush            */
 	{ "_get_client_id",   1, 1, NULL                            }, /* _get_client_id   */
 	{ "status",           1, 1, NULL                            }, /* status           */

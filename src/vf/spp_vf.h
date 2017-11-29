@@ -54,9 +54,6 @@ enum spp_classifier_type {
 enum spp_return_value {
 	SPP_RET_OK = 0,
 	SPP_RET_NG = -1,
-	SPP_RET_USED_MAC = -2,
-	SPP_RET_NOT_ADD_PORT = -3,
-	SPP_RET_USED_PORT = -4
 };
 
 /* Port type (rx or tx) */
@@ -109,6 +106,17 @@ struct spp_component_info {
 	struct spp_port_info *tx_ports[RTE_MAX_ETHPORTS];
 };
 
+#if 0
+/*
+ * Core info
+ */
+struct spp_core_info {
+	enum spp_core_status status;
+	int num_component;
+	int component_id[SPP_CONFIG_CORE_MAX];
+};
+#endif
+
 /*
  * Get client ID
  * RETURN : CLIENT ID(0~127)
@@ -119,11 +127,12 @@ int spp_get_client_id(void);
  * Update Classifier_table
  * OK : SPP_RET_OK(0)
  * NG : SPP_RET_NG(-1)
- *    : SPP_RET_USED_MAC(-2)
- *    : SPP_RET_NOT_ADD_PORT(-3)
- *    : SPP_RET_USED_PORT(-4)
  */
-int spp_update_classifier_table(enum spp_classifier_type type, const char *data, const struct spp_port_index *port);
+int spp_update_classifier_table(
+		enum spp_command_action action,
+		enum spp_classifier_type type,
+		const char *data,
+		const struct spp_port_index *port);
 
 /*
  * Update component
@@ -198,6 +207,18 @@ int spp_check_core_index(unsigned int lcore_id);
  * NG : SPP_RET_NG
  */
 int spp_get_component_id(const char *name);
+
+/**
+ * Check mac address used on the port for registering or removing
+ * RETURN : True if target MAC address matches MAC address of port.
+ */
+int spp_check_mac_used_port(uint64_t mac_addr, enum port_type if_type, int if_no);
+
+/*
+ * Check if port has been added.
+ * RETURN : True if port has been added.
+ */
+int spp_check_added_port(enum port_type if_type, int if_no);
 
 /*
  * Check if component is using port.

@@ -65,12 +65,12 @@ static const size_t ETHER_ADDR_STR_BUF_SZ =
 
 /* classified data (destination port, target packets, etc) */
 struct classified_data {
-	enum port_type  if_type;
-	int             if_no;
-	int             if_no_global;
-	uint8_t         port;
-	uint16_t        num_pkt;
-	struct rte_mbuf *pkts[MAX_PKT_BURST];
+	enum port_type  if_type;              /* interface type (see "enum port_type") */
+	int             if_no;                /* index of ports handled by classifier  */
+	int             if_no_global;         /* interface number                      */
+	uint8_t         port;                 /* port number used by dpdk              */
+	uint16_t        num_pkt;              /* the number of packets in pkts[]       */
+	struct rte_mbuf *pkts[MAX_PKT_BURST]; /* packet array to be classified         */
 };
 
 /* classifier information */
@@ -202,8 +202,14 @@ init_classifier(struct classifier_mac_mng_info *classifier_mng_info)
 	struct spp_component_info component_info;
 
 	memset(classifier_mng_info, 0, sizeof(struct classifier_mac_mng_info));
+	/*
+	 * Set the same value for "ref_index" and "upd_index"
+	 * so that it will not be changed from others during initialization,
+	 * and update "upd_index" after initialization is completed.
+	 * Therefore, this setting is consciously described.
+	 */
 	classifier_mng_info->ref_index = 0;
-	classifier_mng_info->upd_index = classifier_mng_info->ref_index + 1;
+	classifier_mng_info->upd_index = 0;
 	memset(&component_info, 0x00, sizeof(component_info));
 
 #ifdef RTE_MACHINE_CPUFLAG_SSE4_2
@@ -250,6 +256,9 @@ init_classifier(struct classifier_mac_mng_info *classifier_mng_info)
 				"Cannot initialize classifer mac table. ret=%d\n", ret);
 		return -1;
 	}
+
+	/* updating side can be set by completion of initialization. */
+	classifier_mng_info->upd_index = classifier_mng_info->ref_index + 1;
 
 	return 0;
 }
@@ -448,15 +457,19 @@ spp_classifier_mac_update(struct spp_component_info *component_info)
 {
 	int ret = -1;
 	int id = component_info->component_id;
-
 	struct classifier_mac_mng_info *classifier_mng_info =
 			g_classifier_mng_info + id;
 
-	struct classifier_mac_info *classifier_info =
-			classifier_mng_info->info + classifier_mng_info->upd_index;
+	struct classifier_mac_info *classifier_info = NULL;
 
 	RTE_LOG(INFO, SPP_CLASSIFIER_MAC,
 			"Component[%u] Start update component.\n", id);
+
+	/* wait until no longer access the new update side */
+	while(likely(classifier_mng_info->ref_index == classifier_mng_info->upd_index))
+		rte_delay_us_block(CHANGE_UPDATE_INDEX_WAIT_INTERVAL);
+
+	classifier_info = classifier_mng_info->info + classifier_mng_info->upd_index;
 
 	/* initialize update side classifier information */
 	ret = init_classifier_info(classifier_info, component_info);
@@ -598,6 +611,7 @@ int spp_classifier_mac_iterate_table(
 					&port);
 		}
 
+		next = 0;
 		while(1) {
 			ret = rte_hash_iterate(classifier_info->classifier_table,
 					&key, &data, &next);

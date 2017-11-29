@@ -820,32 +820,25 @@ spp_get_client_id(void)
 }
 
 /**
- * Check mac address used on the interface for registering or removing
+ * Check mac address used on the port for registering or removing
  *
  * TODO(yasufum) refactor, change if to iface.
  */
-static int
-check_mac_used_interface(uint64_t mac_addr, enum port_type *if_type, int *if_no)
+int
+spp_check_mac_used_port(uint64_t mac_addr, enum port_type if_type, int if_no)
 {
-	int cnt = 0;
-	for (cnt = 0; cnt < RTE_MAX_ETHPORTS; cnt++) {
-		if (unlikely(g_if_info.nic[cnt].mac_addr == mac_addr)) {
-			*if_type = PHY;
-			*if_no = cnt;
-			return 0;
-		}
-		if (unlikely(g_if_info.vhost[cnt].mac_addr == mac_addr)) {
-			*if_type = VHOST;
-			*if_no = cnt;
-			return 0;
-		}
-		if (unlikely(g_if_info.ring[cnt].mac_addr == mac_addr)) {
-			*if_type = RING;
-			*if_no = cnt;
-			return 0;
-		}
-	}
-	return -1;
+	struct spp_port_info *port_info = get_if_area(if_type, if_no);
+	return (mac_addr == port_info->mac_addr);
+}
+
+/*
+ * Check if port has been added.
+ */
+int
+spp_check_added_port(enum port_type if_type, int if_no)
+{
+	struct spp_port_info *port = get_if_area(if_type, if_no);
+	return port->if_type != UNDEF;
 }
 
 /*
@@ -905,16 +898,14 @@ set_component_change_port(struct spp_port_info *port, enum spp_port_rxtx rxtx)
 
 int
 spp_update_classifier_table(
+		enum spp_command_action action,
 		enum spp_classifier_type type,
 		const char *data,
 		const struct spp_port_index *port)
 {
-	enum port_type if_type = UNDEF;
-	int if_no = 0;
 	struct spp_port_info *port_info = NULL;
 	int64_t ret_mac = 0;
 	uint64_t mac_addr = 0;
-	int ret_used = 0;
 
 	if (type == SPP_CLASSIFIER_TYPE_MAC) {
 		RTE_LOG(DEBUG, APP, "update_classifier_table ( type = mac, data = %s, port = %d:%d )\n",
@@ -925,43 +916,38 @@ spp_update_classifier_table(
 			RTE_LOG(ERR, APP, "MAC address format error. ( mac = %s )\n", data);
 			return SPP_RET_NG;
 		}
-
 		mac_addr = (uint64_t)ret_mac;
 
-		if (port->if_type == UNDEF) {
-			/* Delete(unuse) */
-			ret_used = check_mac_used_interface(mac_addr, &if_type, &if_no);
-			if (ret_used < 0) {
-				RTE_LOG(DEBUG, APP, "No MAC address. ( mac = %s )\n", data);
-				return SPP_RET_OK;
-			}
+		port_info = get_if_area(port->if_type, port->if_no);
+		if (unlikely(port_info == NULL)) {
+			RTE_LOG(ERR, APP, "No port. ( port = %d:%d )\n",
+					port->if_type, port->if_no);
+			return SPP_RET_NG;
+		}
+		if (unlikely(port_info->if_type == UNDEF)) {
+			RTE_LOG(ERR, APP, "Port not added. ( port = %d:%d )\n",
+					port->if_type, port->if_no);
+			return SPP_RET_NG;
+		}
 
-			port_info = get_if_area(if_type, if_no);
-			if (unlikely(port_info == NULL)) {
-				RTE_LOG(ERR, APP, "No port. ( port = %d:%d )\n", port->if_type, port->if_no);
+		if (action == SPP_CMD_ACTION_DEL) {
+			/* Delete */
+			if ((port_info->mac_addr != 0) &&
+					unlikely(port_info->mac_addr != mac_addr)) {
+				RTE_LOG(ERR, APP, "MAC address is different. ( mac = %s )\n",
+						data);
 				return SPP_RET_NG;
 			}
 
 			port_info->mac_addr = 0;
 			memset(port_info->mac_addr_str, 0x00, SPP_MIN_STR_LEN);
 		}
-		else
-		{
+		else if (action == SPP_CMD_ACTION_ADD) {
 			/* Setting */
-			port_info = get_if_area(port->if_type, port->if_no);
-			if (unlikely(port_info == NULL)) {
-				RTE_LOG(ERR, APP, "No port. ( port = %d:%d )\n", port->if_type, port->if_no);
-				return SPP_RET_NG;
-			}
-
-			if (unlikely(port_info->if_type == UNDEF)) {
-				RTE_LOG(ERR, APP, "Port not added. ( port = %d:%d )\n", port->if_type, port->if_no);
-				return SPP_RET_NOT_ADD_PORT;
-			}
-
 			if (unlikely(port_info->mac_addr != 0)) {
-				RTE_LOG(ERR, APP, "Port in used. ( port = %d:%d )\n", port->if_type, port->if_no);
-				return SPP_RET_USED_PORT;
+				RTE_LOG(ERR, APP, "Port in used. ( port = %d:%d )\n",
+						 port->if_type, port->if_no);
+				return SPP_RET_NG;
 			}
 
 			port_info->mac_addr = mac_addr;

@@ -39,6 +39,7 @@ execute_command(const struct spp_command *command)
 	case SPP_CMDTYPE_CLASSIFIER_TABLE:
 		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute classifier_table command.\n");
 		ret = spp_update_classifier_table(
+				command->spec.classifier_table.action,
 				command->spec.classifier_table.type,
 				command->spec.classifier_table.value,
 				&command->spec.classifier_table.port);

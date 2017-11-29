@@ -42,6 +42,7 @@ enum spp_command_type {
 
 /* "classifier_table" command specific parameters */
 struct spp_command_classifier_table {
+	enum spp_command_action action;
 	enum spp_classifier_type type;
 	char value[SPP_CMD_VALUE_BUFSZ];
 	struct spp_port_index port;
