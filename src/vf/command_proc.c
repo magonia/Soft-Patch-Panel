@@ -7,7 +7,6 @@
 #include <jansson.h>
 
 #include "spp_vf.h"
-#include "spp_config.h"
 #include "string_buffer.h"
 #include "command_conn.h"
 #include "command_dec.h"
@@ -48,6 +47,25 @@ execute_command(const struct spp_command *command)
 	case SPP_CMDTYPE_FLUSH:
 		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute flush command.\n");
 		ret = spp_flush();
+		break;
+
+	case SPP_CMDTYPE_COMPONENT:
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute component command.\n");
+		ret = spp_update_component(
+				command->spec.component.action,
+				command->spec.component.name,
+				command->spec.component.core,
+				command->spec.component.type);
+		break;
+
+	case SPP_CMDTYPE_PORT:
+		RTE_LOG(INFO, SPP_COMMAND_PROC, "Execute port command. (act = %d)\n",
+				command->spec.port.action);
+		ret = spp_update_port(
+				command->spec.port.action,
+				&command->spec.port.port,
+				command->spec.port.rxtx,
+				command->spec.port.name);
 		break;
 
 	default:
@@ -230,12 +248,12 @@ int append_classifier_element_value(
 		void *opaque,
 		__rte_unused enum spp_classifier_type type,
 		const char *data,
-		const struct spp_config_port_info *port)
+		const struct spp_port_index *port)
 {
 	json_t *parent_obj = (json_t *)opaque;
 
 	char port_str[64];
-	spp_config_format_port_string(port_str, port->if_type, port->if_no);
+	spp_format_port_string(port_str, port->if_type, port->if_no);
 
 	json_array_append_new(parent_obj, json_pack(
 			"{ssssss}",
